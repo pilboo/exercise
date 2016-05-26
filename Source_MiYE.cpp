@@ -1,6 +1,3 @@
-// This program allows the clerks to input a cutomer ID
-// then searches the ID from the Customers file.
-
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -11,11 +8,13 @@ using namespace std;
 int main() {
 	
 	// Check customer validity
-
+	// This part allows the clerks to input a cutomer ID then searches the ID from the Customers file.
+	
 	string input_id, customer_id;	// Variable for user input
-	customers customer;				// Create customer class
-	bool c_found;					// Variable for whether a customer data exists
-	bool c_valid = false;			// Flag for the customer validity
+	customers customer;		// Create customer class
+	bool c_found;			// Variable for whether a customer data exists
+	bool c_valid = false;		// Flag for the customer validity
+	string t_today;			// Variable for storing date of today	
 
 	cout << "Enter customer ID#: "; 
 	cin >> input_id;
@@ -49,7 +48,7 @@ int main() {
 			int c_month = local_time->tm_mon + 1;		// Get this month
 			int c_year = local_time->tm_year + 1900;	// Get this year
 
-			string t_today		// Set today as a format of mm-dd-yyyy
+			t_today		// Set today as a format of mm-dd-yyyy
 				= ((c_month < 10) ? "0" : "") + to_string(c_month)	// If the value of month is smaller than 10, add "0" in front of the month (ex. 3 -> 03)
 				+ "-" + ((c_day < 10) ? "0":"") + to_string(c_day)	// If the value of day is smaller that 10, add "0" in front of the day
 				+ "-" + to_string(c_year);
@@ -66,7 +65,8 @@ int main() {
 	
 	// Check service availability
 
-	if (c_valid) {	// If the customer is valid
+	if (c_valid) {	// If the customer is valid, check service availability
+		
 
 	}
 

@@ -26,15 +26,18 @@ int main() {
 	string chin, chout;				// Variables for storing the check-in and check-out date
 
 	// Allow the user to input customer ID
-	cout << "Enter customer ID#: "; 
-	cin >> input_id;
+	do {
+		cout << "\n\tEnter customer ID#: ";
+		cin >> input_id;
 
-	customer.get_c_info(input_id);		// Trying to find a customer data from customer.txt
-	
-	if (!customer.get_isfound()) {					// If not found
-		cout << "Please ask the Hotel Front Desk.\n";
-	}
-	else {							// If the customer information found
+		customer.get_c_info(input_id);		// Trying to find a customer data from customer.txt
+
+		if (!customer.get_isfound()) 
+			cout << "\n\t=== Please ask the Hotel Front Desk. ===\n";
+
+	} while (!customer.get_isfound());
+
+	if (customer.get_isfound()) {							// If the customer information found
 	
 		customer.set_customers();			// Store the customer information into customer class
 		customer_id = customer.get_c_id();	// Get the customer ID#
@@ -47,14 +50,14 @@ int main() {
 
 		// Check if a within-stay customer
 		if (!(chin <= t_today && chout >= t_today)) {
-			cout << "\nNo within stay customer.\n";
+			cout << "\n\t=== No within stay customer ===\n";
 		} else {
 
 			if (chin == chout) {	// If check-in data is same as check-out data (not overnight)
-				cout << "\nNo overnight customer.\n";
+				cout << "\n\t=== No overnight customer ===\n";
 			}
 			else {					// The customer is a within-stay and overnight customer
-				cout << "\nValid to reserve services\n";
+				cout << "\n\t=== Valid to reserve services ===\n";
 				c_valid = true;
 			}
 		}
@@ -62,7 +65,7 @@ int main() {
 	
 	// Check service availability and customer availability
 	if (!c_valid) {
-		cout << "The customer #" << customer_id << " cannot reserve spa services\n";
+		cout << "\n\t=== The customer #" << customer_id << " cannot reserve spa services ===\n";
 	} else {	// If the customer is valid, check service availability
 
 		// Display services and let the clerk make a choice
@@ -71,13 +74,13 @@ int main() {
 		
 		bool iscorrect = false;
 		do {
-			cout << "\n\nSelect the service.\n";
+			cout << "\n\n\tSelect the service.\n";
 			service.print_services();
-			cout << "\nPlease Enter the service ID: ";
+			cout << "\n\tPlease Enter the service ID: ";
 			cin >> s_choice;
 
 			if (!(iscorrect = service.chk_serviceid(s_choice))) {
-				cout << "\nPlease Enter valid service ID";
+				cout << "\n\t=== [ERROR] Please Enter valid service ID ===";
 			}
 		} while (!iscorrect);
 
@@ -90,15 +93,15 @@ int main() {
 		// Display the service calendar
 		string r_date;		// Variable for the date of reservation
 
-		cout << "\n=== Select the day of reservation ===\n";
+		cout << "\n\t=== Select the day of reservation ===\n";
 		do {
-			cout << "\nThe reservation can be made from " << t_today << " to " << chout << endl;
-			cout << "Please enter the date of reservation (mm-dd-yyyy): ";
+			cout << "\n\tThe reservation can be made from " << t_today << " to " << chout;
+			cout << "\n\tPlease enter the date of reservation (mm-dd-yyyy): ";
 			cin >> r_date;
 
 			if (!((r_date >= t_today) && (r_date <= chout))) {	// If the date of reseravtion is before today or after check-out date
-				cout << "\n[ERROR] The date of reservation must be later than or the same as today, and \n";
-				cout << "earlier than or the same as the customer's check-out date.\n\n";
+				cout << "\n\t[ERROR] The date of reservation must be later than or the same as today, and \n";
+				cout << "\tearlier than or the same as the customer's check-out date.\n\n";
 			}
 		} while (!((r_date >= t_today) && (r_date <= chout)));
 
@@ -154,27 +157,31 @@ int main() {
 
 		string app_time, tm_choice;
 		int service_tm;
-		bool is_timeok = false; 
+		bool is_timeok = false, is_reserveok = false;
 
 		do {
 			cout << "\n\n\tPlease Enter the time to make a reservation (hh:mm - e.g., 13:00): ";
 			cin >> app_time;
 
-			cout << "\n=== SERVICE DURATION TIME ===";
+			cout << "\n\t=== SERVICE DURATION TIME ===";
 			service_tm = service.print_times(s_choice, t_choice);
 			cout << "\n\tPlease enter the time ID: ";
 			cin >> tm_choice;
 
+			
 			if (!(is_timeok = r_class.chk_apptime(app_time, service_tm, b_hour, b_min, e_hour, e_min))) {
 				cout << "\n\t=== [ERROR] Please enter an available time slot ===";
 			}
-		} while (!is_timeok);
 
-		get_today(t_today, t_hour, t_min);
-		string c_time = t_hour + ":" + t_min;
+			get_today(t_today, t_hour, t_min);
+			string c_time = t_hour + ":" + t_min;
 
-		r_class.reserve(customer_id, s_choice, t_choice, tm_choice, r_date, app_time, service_tm, t_today, c_time);
+			if (is_timeok)
+				is_reserveok = r_class.reserve(customer_id, s_choice, t_choice, tm_choice, r_date, app_time, service_tm, t_today, c_time);
+				
+		} while (!is_timeok || !is_reserveok);
 
+		
 	}
 	return 0;
 }

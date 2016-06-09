@@ -1,6 +1,7 @@
 // Implemecation file for the Customer class.
 #include <iostream>
 #include <fstream>
+#include <ctime>
 #include "customers.h"
 
 customers::customers() {
@@ -10,119 +11,303 @@ customers::customers() {
 	chin_time = "";
 	chout_date = "";
 	chout_time = "";
-	c_info = "";
-	isfound = false;
+		
+	cur_day = "";
+	cur_hour = "";
+	cur_min = "";
+
+	all_customer = nullptr;
+	customer_cnt = 0;
+
+	init_customer_arr(CUSTOMER_FILE);
 }
 
-void customers::get_c_info(string &c_input) {
-	
-	ifstream c_file;
-	string temp, temp_id;
-	int pos;
-	c_file.open("customers.txt");
+customers::customers(customers &obj) {
+	obj.c_id = "";
+	obj.c_name = "";
+	obj.chin_date = "";
+	obj.chin_time = "";
+	obj.chout_date = "";
+	obj.chout_time = "";
 
-	if (!c_file) {
+	obj.cur_day = "";
+	obj.cur_hour = "";
+	obj.cur_min = "";
+
+	obj.all_customer = nullptr;
+	obj.customer_cnt = 0;
+
+	obj.init_customer_arr(obj.CUSTOMER_FILE);
+}
+void customers::init_customer_arr(const string &txt_file) {
+	ifstream customer_file;
+	string customer_record;
+
+	customer_file.open(txt_file);
+
+	if (!customer_file) {
 		cout << "\n==========================================="
-			 << "\n|| Error: Cannot open the Customer file. ||"
+			 << "\n|| Error: Cannot Open the Customer File. ||"
 			 << "\n===========================================" << endl;
+		exit(0);
 	}
 	else {
-		while (!c_file.eof()) {
-			//getline(c_file, temp, '\n');
-			getline(c_file, temp);
-			pos = temp.find(",");
+		while (!customer_file.eof()) {	// Calculates the number of customer's information in the customer.txt
+			getline(customer_file, customer_record);
+			customer_cnt++;
+		}	// End of while
 
-			temp_id = temp.substr(0, pos);
+		customer_file.clear();
+		customer_file.seekg(0, ios::beg);	// Goes back to the beginning of the file
 
-			if (c_input == temp_id) {
-				cout << "\n\t=== Customer #" << c_input << " Found ===\n";
-				c_info = temp;
-				isfound = true;
-				break;
-			}
+		all_customer = new customer_info[customer_cnt];
+		
+		for (int i = 0; i < customer_cnt; i++) {
+			int pos1 = 0, pos2 = 0;
+			string temp_arr[6];
+
+			getline(customer_file, customer_record);
+
+			for (int j = 0; j < 6; j++) {
+				pos2 = customer_record.find(",", pos1);
+				temp_arr[j] = customer_record.substr(pos1, pos2 - pos1);
+				pos1 = pos2 + 1;
+			}	// End of for statement to store each customer information to the temp_arr.  
+			
+			all_customer[i].cid = temp_arr[0];
+			all_customer[i].cname = temp_arr[1];
+			all_customer[i].in_date = temp_arr[2];
+			all_customer[i].in_time = temp_arr[3];
+			all_customer[i].out_date = temp_arr[4];
+			all_customer[i].out_time = temp_arr[5];
+		}	// End of for statement to store each customer record into the all_customer structure array.
+	}
+
+	customer_file.close();
+
+	return;
+}
+/*
+// The member function of set_customer accepts the customer ID#,
+// and stores the customer information into the member variables.
+*/
+void customers::set_customer(string &input_id) {
+
+	bool isok = false;
+	customer_info *found_customer = nullptr;
+	found_customer = new customer_info;
+
+	do {	// Allows the clerk to input 3-digit number as a customer ID#
+		cout << "\n\tEnter the Customer ID# (000 - 999, M for Main Menu): ";
+		cin >> input_id;
+
+		if (input_id == "M" || input_id == "m") {
+			cout << "\n\t=== Returning to Main Menu ===\n";
+			break;
 		}
 
-		if (!isfound) 
-			cout << "\n\t=== No customer #" << c_input << " was found ===\n";
+		if (id_check(input_id) && isfound(input_id, found_customer) && check_stay(found_customer)) {
 
-		c_file.close();
-	}
-	
+			c_id = found_customer->cid;
+			c_name = found_customer->cname;
+			chin_date = found_customer->in_date;
+			chin_time = found_customer->in_time;
+			chout_date = found_customer->out_date;
+			chout_time = found_customer->out_time;
+
+			isok = true;
+			break;
+		}
+
+	} while (!isok);
+
+	delete found_customer;
+	found_customer = nullptr;
+
 	return;
 }
 
-void customers::set_customers() {
+bool customers::id_check(const string &input_str) {
+	bool isok = true;
 	
-	if (c_info.length() <= 0 || !isfound) {
-		cout << "\n\t=== [ERROR] Customer information needed ===\n";
+	// Check the lenght of the input
+	if (input_str.length() != 3) {
+		isok = false;
 	}
 	else {
-		int pos1, pos2;
-		
-		pos1 = 0;
-		pos2 = c_info.find(",", pos1);
-		c_id = c_info.substr(pos1, pos2 - pos1);
-
-		pos1 = pos2 + 1;
-		pos2 = c_info.find(",", pos1);
-		c_name = c_info.substr(pos1, pos2 - pos1);
-
-		pos1 = pos2 + 1;
-		pos2 = c_info.find(",", pos1);
-		chin_date = c_info.substr(pos1, pos2 - pos1);
-
-		pos1 = pos2 + 1;
-		pos2 = c_info.find(",", pos1);
-		chin_time = c_info.substr(pos1, pos2 - pos1);
-
-		pos1 = pos2 + 1;
-		pos2 = c_info.find(",", pos1);
-		chout_date = c_info.substr(pos1, pos2 - pos1);
-
-		pos1 = pos2 + 1;
-		pos2 = c_info.find(",", pos1);
-		chout_time = c_info.substr(pos1, pos2 - pos1);
+		for (int i = 0; i < 3; i++) {
+			if (!isdigit(input_str.at(i)))
+				isok = false;
+		}
 	}
+
+	if (!isok)
+		cout << "\n\t=== [ERROR] Please Enter a 3-Digit Number [000 - 999] ===" << endl;
+
+	return isok;
+}
+
+bool customers::isfound(const string &input_str, customer_info *c_info) {
+	
+	for (int i = 0; i < customer_cnt; i++) {
+		if (all_customer[i].cid == input_str) {
+
+			c_info->cid = all_customer[i].cid;
+			c_info->cname = all_customer[i].cname;
+			c_info->in_date = all_customer[i].in_date;
+			c_info->in_time = all_customer[i].in_time;
+			c_info->out_date = all_customer[i].out_date;
+			c_info->out_time = all_customer[i].out_time;
+
+			cout << "\n\t=== Customer ID #" << input_str << " Is Found ===\n";
+			print_c_info(c_info);
+
+			return true;
+		}
+	}
+
+	cout << "\n\t=== [No Customer ID # " << input_str << " Was Found] ===\n";
+	return false;
+}
+
+bool customers::check_stay(const customer_info *c_info) {
+	string chin = c_info->in_date, 
+		chout = c_info->out_date;
+
+	set_cur();
+
+	if (!(chin <= cur_day && chout >= cur_day)) {
+		cout << "\n\n\t=== [No Within Stay Customer] ===\n";
+		return false;
+	}
+	else if (chin == chout) {	// If check-in data is same as check-out data (not overnight)
+		cout << "\n\n\t=== [No Overnight Customer] ===\n";
+		return false;
+	}	
+
+	// The customer is a within-stay and overnight customer
+	cout << "\n\n\t=== Valid to Reserve the Spa Service(s) ===\n";
+	return true;
+}
+
+void customers::set_cur() {
+	time_t current_time;
+	struct tm local_time;
+
+	time(&current_time);
+	localtime_s(&local_time, &current_time);
+
+	int c_min = local_time.tm_hour;				// Get the current minutes
+	int c_hour = local_time.tm_hour;			// Get the current hours
+	int c_day = local_time.tm_mday;			// Get the day of this month
+	int c_month = local_time.tm_mon + 1;		// Get this month
+	int c_year = local_time.tm_year + 1900;	// Get this year
+
+	cur_day = ((c_month < 10) ? "0" : "") + to_string(c_month)	// If the value of month is smaller than 10, add "0" in front of the month (ex. 3 -> 03)
+		+ "-" + ((c_day < 10) ? "0" : "") + to_string(c_day)	// If the value of day is smaller that 10, add "0" in front of the day
+		+ "-" + to_string(c_year);
+
+	cur_hour = ((c_hour < 10) ? "0" : "") + to_string(c_hour);
+	cur_min = ((c_min < 10) ? "0" : "") + to_string(c_min);
+
 	return;
-}
-
-string customers::get_c_id() {
-	return c_id;
-}
-
-string customers::get_c_name() {
-	return c_name;
-}
-
-string customers::get_chin_date() {
-	return chin_date;
-}
-
-string customers::get_chin_time() {
-	return chin_time;
-}
-
-string customers::get_chout_date() {
-	return chout_date;
-}
-
-string customers::get_chout_time() {
-	return chout_time;
-}
-
-bool customers::get_isfound() {
-	return isfound;
 }
 
 void customers::print_c_info() const {
-	
-	cout << "\n\tCustomer ID#: " << c_id << endl;
-	cout << "\tCustomer Name: " << c_name << endl;
-	cout << "\tCheck-in: " << chin_date << " " << chin_time << endl;
-	cout << "\tCheck-out: " << chout_date << " " << chout_time << endl;
+	cout << "\n\t=================================================";
+	cout << "\n\tCustomer ID#: " << c_id;
+	cout << "\n\tCustomer Name: " << c_name;
+	cout << "\n\tCheck-in: " << chin_date << " " << chin_time;
+	cout << "\n\tCheck-out: " << chout_date << " " << chout_time;
+	cout << "\n\t=================================================";
 
 	return;
 }
 
+void customers::print_c_info(const customer_info *c_info) const {
+
+	cout << "\n\t=================================================";
+	cout << "\n\tCustomer ID#: " << c_info->cid;
+	cout << "\n\tCustomer Name: " << c_info->cname;
+	cout << "\n\tCheck-in: " << c_info->in_date << " " << c_info->in_time;
+	cout << "\n\tCheck-out: " << c_info->out_date << " " << c_info->out_time;
+	cout << "\n\t=================================================";
+
+	return;
+}
+
+string customers::get_c_id() const {
+	return c_id;
+}
+
+string customers::get_c_name() const {
+	return c_name;
+}
+
+string customers::get_c_name(const string &cid) {
+	string cname;
+	for (int i = 0; i < customer_cnt; i++) {
+		if (all_customer[i].cid == cid) {
+			cname = all_customer[i].cname;
+			break;
+		}
+	}
+	return cname;
+}
+
+string customers::get_chin_date() const {
+	return chin_date;
+}
+
+string customers::get_chin_time() const {
+	return chin_time;
+}
+
+string customers::get_chout_date() const {
+	return chout_date;
+}
+
+string customers::get_chout_date(const string &cid) {
+	string out_date;
+
+	for (int i = 0; i < customer_cnt; i++) {
+		if (all_customer[i].cid == cid) {
+			out_date = all_customer[i].out_date;
+			break;
+		}
+	}
+
+	return out_date;
+}
+
+string customers::get_chout_time() const {
+	return chout_time;
+}
+
+string customers::get_chout_time(const string &cid) {
+	string out_time;
+	for (int i = 0; i < customer_cnt; i++) {
+		if (all_customer[i].cid == cid) {
+			out_time = all_customer[i].out_time;
+			break;
+		}
+	}
+	return out_time;
+}
+
+string customers::get_cur_day() const {
+	return cur_day;
+}
+
+string customers::get_cur_hour() const {
+	return cur_hour;
+}
+
+string customers::get_cur_min() const {
+	return cur_min;
+}
+
 customers::~customers() {
+	delete[] all_customer;
+	all_customer = nullptr;
 }

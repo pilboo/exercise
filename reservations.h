@@ -2,13 +2,16 @@
 #define RESERVATIONS_H
 
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 #include <string>
+#include "customers.h"
+#include "services.h"
 using namespace std;
 
 class reservations {
 private:
-	struct s_reservation {
+	struct reservation_info {
 		string customer_id;
 		string service_id;
 		string type_id;
@@ -18,26 +21,53 @@ private:
 		string app_end_time;
 		string input_date;
 		string input_time;
-		string iscancle;
+		string iscancled;
 		string cancel_date;
 		string cancel_time;
 	};
-	s_reservation *rsrv_arr;
-	string s_name;
-	string t_name;
-	int rsrv_cnt;
-	int srvc_tm;
-	int c_srvc_tm;
-	void init_rsrv_arr(string&);
+	reservation_info *all_reservation;
+	int reservation_cnt;
+	string reservation_day;
+	string reservation_time;
+	string begin_time;
+	string end_time;
+	int begin_hour;
+	int begin_min;
+	int end_hour;
+	int end_min;
+	void init_reservation_arr(const string&);
+	
+	string RESERVATION_FILE = "reservations.txt";
+	customers customer;
+	services service;
+	string customer_id;
 public:
 	reservations();
-	reservations(string&);
-	void print_service_cal(string&, string&, string&, string&);
-	void print_customer_cal(string&, string&, string&);
-	bool chk_apptime(string&, int, int, int, int, int);
-	bool chk_service(string&, string&, string&, string&, string&, int);
-	bool chk_customer(string&, string&, string&, string&);
-	bool reserve(string&, string&, string&, string&, string&, string&, int, string&, string&);
+	reservations(customers&, services&);
+	void set_customer_id(const string&);
+	void set_reservation_day();
+	bool check_date(const string&);
+	bool check_range_of_date(const string&, const string&, const string&);
+	void set_begin_end_time();
+	void print_calendar_header(const string&, const string&, const string&);
+	void print_calendar_body(const string&, const string&, const string&);
+	void print_service_cal(const string&, const string&, const string&);
+	int set_temp_cnt();
+	int set_temp_cnt(const string&);
+	int set_temp_cnt(const string&, const string&);
+	void set_temp_reservation(reservation_info*);
+	void set_temp_reservation(const string&, reservation_info*);
+	void set_temp_reservation(const string&, const string&, reservation_info*);
+	void print_customer_cal(const string&, const string&, const string&, const string& );
+	void set_reservation_time();
+	void set_reservation_time(const string&, const string&, const string&);
+	bool check_time(string&);
+	bool check_range_of_time(string&, int);
+	bool check_service(const string&, const string&, const string&);
+	bool check_customer();
+	void print_available_services();
+	void print_all_services(services::service_info*);
+	void reserve(string&, string&, string&);
 	~reservations();
 };
 

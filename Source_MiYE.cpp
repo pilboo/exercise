@@ -76,6 +76,7 @@ int main() {
 					reservation.set_reservation_day();
 					reservation.set_reservation_time();
 					reservation.print_available_services();
+					reservation.input_services();
 					break;
 				case 3:
 				case 4:

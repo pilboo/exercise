@@ -268,17 +268,13 @@ int reservations::set_temp_cnt() {
 }
 
 // Count the reservation on a specific day 
-int reservations::set_temp_cnt(const string &r_time) {
+int reservations::set_temp_cnt(const string &r_day) {
 	int cnt = 0;
 	for (int i = 0; i < reservation_cnt; i++) {
-		if (all_reservation[i].app_date == reservation_day && all_reservation[i].iscancled != "Y") {
-			if ((all_reservation[i].app_end_time >= r_time && all_reservation[i].app_start_time <= r_time) ||
-				(all_reservation[i].app_start_time >= r_time)) {
-				cnt++;
-			}
-		}
+		if (all_reservation[i].app_date == r_day && all_reservation[i].iscancled != "Y")
+			cnt++;
 	}
-	cout << "cnt: " << cnt << endl;
+	
 	return cnt;
 }
 // Count the reservation of a specific service and type on the reservation day
@@ -296,6 +292,7 @@ int reservations::set_temp_cnt(const string &sid, const string &tid) {
 }
 
 
+//Keep the reservation information of a specific customer on the reservation day
 void reservations::set_temp_reservation(reservation_info *temp_reservation) {
 	for (int i = 0; i < reservation_cnt; i++) {
 		if (all_reservation[i].customer_id == customer_id && all_reservation[i].app_date == reservation_day && 
@@ -320,31 +317,30 @@ void reservations::set_temp_reservation(reservation_info *temp_reservation) {
 	return;
 }
 
-void reservations::set_temp_reservation(const string &r_time, reservation_info *temp_reservation) {
+// Keep the reservation information on the specific day
+void reservations::set_temp_reservation(const string &r_day, reservation_info *temp_reservation) {
 	for (int i = 0; i < reservation_cnt; i++) {
-		if (all_reservation[i].app_date == reservation_day && all_reservation[i].iscancled != "Y") {
-			if ((all_reservation[i].app_end_time >= r_time && all_reservation[i].app_start_time <= r_time) ||
-				(all_reservation[i].app_start_time >= r_time)) {
-				temp_reservation->customer_id = all_reservation[i].customer_id;
-				temp_reservation->service_id = all_reservation[i].service_id;
-				temp_reservation->type_id = all_reservation[i].type_id;
-				temp_reservation->time_id = all_reservation[i].time_id;
-				temp_reservation->app_date = all_reservation[i].app_date;
-				temp_reservation->app_start_time = all_reservation[i].app_start_time;
-				temp_reservation->app_end_time = all_reservation[i].app_end_time;
-				temp_reservation->input_date = all_reservation[i].input_date;
-				temp_reservation->input_time = all_reservation[i].input_time;
-				temp_reservation->iscancled = all_reservation[i].iscancled;
-				temp_reservation->cancel_date = all_reservation[i].cancel_date;
-				temp_reservation->cancel_time = all_reservation[i].cancel_time;
-
-				temp_reservation++;
-			}
+		if (all_reservation[i].app_date == r_day && all_reservation[i].iscancled != "Y") {
+			temp_reservation->customer_id = all_reservation[i].customer_id;
+			temp_reservation->service_id = all_reservation[i].service_id;
+			temp_reservation->type_id = all_reservation[i].type_id;
+			temp_reservation->time_id = all_reservation[i].time_id;
+			temp_reservation->app_date = all_reservation[i].app_date;
+			temp_reservation->app_start_time = all_reservation[i].app_start_time;
+			temp_reservation->app_end_time = all_reservation[i].app_end_time;
+			temp_reservation->input_date = all_reservation[i].input_date;
+			temp_reservation->input_time = all_reservation[i].input_time;
+			temp_reservation->iscancled = all_reservation[i].iscancled;
+			temp_reservation->cancel_date = all_reservation[i].cancel_date;
+			temp_reservation->cancel_time = all_reservation[i].cancel_time;
+			
+			temp_reservation++;
 		}
 	}
 	return;
 }
 
+// Keep the reservation information of a specific service on the reservation day
 void reservations::set_temp_reservation(const string &sid, const string &tid, reservation_info *temp_reservation) {
 	for (int i = 0; i < reservation_cnt; i++) {
 		if (all_reservation[i].service_id == sid && all_reservation[i].type_id == tid &&
@@ -428,7 +424,8 @@ void reservations::set_reservation_time(const string &sid, const string &type_id
 		cout << "\n\n\tPlease Enter the Reservation Time (hh:mm - e.g., 13:00): ";
 		cin >> app_time;
 
-		if (check_time(app_time) && check_range_of_time(app_time, stime) && check_service(sid, type_id, time_id) && check_customer()) {
+		if (check_time(app_time) && check_range_of_time(app_time, stime) 
+			&& check_service(sid, type_id, time_id) && check_customer(begin_time, end_time)) {
 			reservation_time = app_time;
 			isok = true;
 		}
@@ -436,9 +433,6 @@ void reservations::set_reservation_time(const string &sid, const string &type_id
 
 	return;
 }
-
-
-
 
 bool reservations::check_time(string &input_time) {
 	if (input_time.length() == 5) {
@@ -496,7 +490,7 @@ bool reservations::check_service(const string &sid, const string &tid, const str
 					r_count++;
 
 					if (service.get_service_limit(sid, tid, time_id) - r_count <= 0) {
-						cout << "\n\n\t=== [ERROR] Duplicated Reservation is Not Allowed ===\n";
+						cout << "\n\n\t=== [No More Reservation Allowed] ===\n";
 						return false;
 					}
 				}
@@ -510,7 +504,8 @@ bool reservations::check_service(const string &sid, const string &tid, const str
 	return true;
 }
 
-bool reservations::check_customer() {
+// Check if there is any reservation of the customer between the b_time and e_time
+bool reservations::check_customer(const string &b_time, const string &e_time) {
 	bool isok = true;
 	int daily_cr_cnt = set_temp_cnt();
 
@@ -518,22 +513,30 @@ bool reservations::check_customer() {
 		reservation_info *daily_cr = nullptr;
 		daily_cr = new reservation_info[daily_cr_cnt];
 
-		for (int i = 0; i < daily_cr_cnt; i++) {
-			if (daily_cr[i].customer_id == customer_id && daily_cr[i].app_date == reservation_day) {
-				if ((daily_cr[i].app_start_time <= begin_time && daily_cr[i].app_end_time > begin_time) ||
-					(daily_cr[i].app_start_time <= end_time && daily_cr[i].app_end_time > end_time)) {
-					
-					cout << "\n\n\t=== [ERROR] Duplicated Reservation is Not Allowed ===\n";
-					isok = false;
-				}
-			}
-		}
+		set_temp_reservation(daily_cr);
 
+		isok = check_c_reservation(daily_cr, daily_cr_cnt, b_time, e_time);
+		
 		delete[] daily_cr;
 		daily_cr = nullptr;
 	}
 
 	return isok;
+}
+
+bool reservations::check_c_reservation(const reservation_info *temp_rinfo, const int &temp_rcnt, const string &b_time, const string &e_time) {
+	
+	if (temp_rcnt > 0) {
+		for (int i = 0; i < temp_rcnt; i++) {
+			if ((temp_rinfo[i].app_start_time <= b_time && temp_rinfo[i].app_end_time > b_time) ||
+				(temp_rinfo[i].app_start_time <= e_time && temp_rinfo[i].app_end_time > e_time)) {
+				cout << "\n\n\t=== [The Customer Already Reserved Another Service at the Time] ===\n";
+				return false;
+			}
+		}
+	}
+	
+	return true;
 }
 
 void reservations::print_available_services() {
@@ -545,110 +548,123 @@ void reservations::print_available_services() {
 	cout << "\n\t---------------------------------------------------------------";
 	cout << "\n\t\t\tList of All Available Services";
 	cout << "\n\t===============================================================";
-	cout << "r_time" << reservation_time << endl;
-	int daily_cnt = set_temp_cnt(reservation_time);
-	cout << "daily_cnt: " << daily_cnt << endl;
-	if (daily_cnt > 0) {
-		reservation_info *daily_r = nullptr;
-		daily_r = new reservation_info[daily_cnt];
-		set_temp_reservation(reservation_time, daily_r);
+	
+	int daily_cnt = set_temp_cnt(reservation_day);	//Calculate the number of reservation of the reservation day.
+	bool isok; 
+	string b_time, e_time;
+	b_time = reservation_time;
+	e_time = b_time;
+	if (daily_cnt <= 0) {	// If no reservation on the reservation day, display all the services.
+		cout << "\n\n\t=== No Reservation Was Found - All Services Are Available ===";
+		service.print_all_serivces();
+		cout << "\n\t===============================================================";
+	}
+	// Unless any reservation of the customer at the time slot,
+	// check if there is any reservation of the customer within the service time,
+	// and check if there is any reservation of the same service within the service time.
+	else {
+		if (isok = check_customer(b_time, e_time)) {
+			reservation_info *daily_cr;
+			daily_cr = new reservation_info[daily_cnt];
 
-		bool isok = true;
-		// Check if there is the customer's reservation at that time.
-		for (int i = 0; i < daily_cnt; i++) {
-			if (daily_r[i].customer_id == customer_id &&
-				daily_r[i].app_start_time <= reservation_time && daily_r[i].app_end_time > reservation_time) {
-				cout << "\n\n\t=== [NOT AVAILABLE - The Customer's Reservation Was Found] ===";
-				isok = false;
-				break;
-			}
-		}
+			set_temp_reservation(reservation_day, daily_cr);
 
-		if (isok) {
-			// Check if there is any reservation at that time, or any reservation after that time and within service time.
 			services::service_info *s = nullptr;
 			s = service.get_all_services();
-			int s_cnt = service.get_service_cnt();
-			
+
 			string sid, type_id, time_id;
 			for (int i = 0; i < service.get_service_cnt(); i++) {
-				int slimit = s[i].service_limit;
-				int stime = s[i].service_time;
-				int r_cnt = 0;
-
-				string begintime = reservation_time;
-				int endhour = stoi(reservation_time.substr(0, 2));
-				int endmin = stoi(reservation_time.substr(3, 2));
-
-				endmin += stime;
-				endhour = endhour + endmin / 60;
-				endmin = endmin % 60;
-
-				string endtime = (endhour < 10 ? "0" : "") + to_string(endhour) + ":"
-					+ (endmin < 10 ? "0" : "") + to_string(endmin);
-
-		
 				bool flag = true;
-				
+				int r_cnt = 0;
 				for (int j = 0; j < daily_cnt; j++) {
-					
-					if (s[i].service_id == daily_r[j].service_id && s[i].type_id == daily_r[j].type_id) {
-						if ((daily_r[j].app_start_time <= begintime && daily_r[j].app_end_time > begintime) ||
-							(daily_r[j].app_start_time < endtime && daily_r[j].app_end_time >= endtime)) {
+					int bhour = stoi(b_time.substr(0, 2)),
+						bmin = stoi(b_time.substr(3, 2));
+					int emin = bmin + s[i].service_time;
+					int ehour = bhour + emin / 60;
+					emin = emin % 60;
+					e_time = ((ehour < 10) ? "0" : "") + to_string(ehour) + ":" + ((emin < 10) ? "0" : "") + to_string(emin);
+
+					if ((daily_cr[j].customer_id == customer_id)) {
+						if ((daily_cr[j].app_start_time <= b_time && daily_cr[j].app_end_time > b_time) ||
+							(daily_cr[j].app_start_time <= e_time && daily_cr[j].app_end_time > e_time)) {
+							flag = false;
+							break;
+						}
+					}
+					else if (s[i].service_id == daily_cr[j].service_id && s[i].type_id == daily_cr[j].type_id) {
+						if ((daily_cr[j].app_start_time <= b_time && daily_cr[j].app_end_time > b_time) ||
+							(daily_cr[j].app_start_time < e_time && daily_cr[j].app_end_time >= e_time)) {
 							r_cnt++;
-							if (slimit - r_cnt <= 0) {
+							if (s[i].service_limit - r_cnt <= 0) {
 								flag = false;
 								break;
 							}
 						}
 					}
-					else if (daily_r[j].customer_id == customer_id){
-						if (daily_r[j].app_end_time <= begintime || daily_r[j].app_start_time >= endtime) {
-							flag = true;
-						}
-						else {
-							flag = false;
-							break;
-						}
+				}	// for (int j...)
 
-					}
-					
-				}
-
+				
 				if (flag) {
 					if (s[i].service_id != sid) {
 						sid = s[i].service_id;
 						type_id = "", time_id = "";
 						cout << "\n\t[" << sid << "] " << s[i].service_name << " Service";
 					}
-
-					if (s[i].type_id != type_id) {
+					if (s[i].type_id != type_id) {	
 						type_id = s[i].type_id;
 						time_id = "";
 						cout << "\n\t\t[" << type_id << "] "
 							<< (s[i].service_type.length() > 0 ? s[i].service_type : "No Type");
 					}
-
-					if (s[i].time_id != time_id) {
+					if (s[i].time_id != time_id) {	
 						time_id = s[i].time_id;
 						cout << "\n\t\t\t[" << time_id << "] " << s[i].service_time << " minutes";
 					}
 				}
-		
-			}
-		}
-		delete[] daily_r;
-		daily_r = nullptr;
-	}
-	else {
-		cout << "\n\n\t=== No Reservation Was Found - All Services Are Available ===";
-		service.print_all_serivces();
-	}
-
+			} // for (int i...)
+			delete[] daily_cr;
+			daily_cr = nullptr;
+		} // if (daily_cnt...)
+	}	
 	return;
 }
 
+void reservations::input_services() {
+	bool isok = false;
+	string service_input, type_input, time_input;
+	do {
+		cout << "\n\n\t=================================";
+		cout << "\n\tSelect the Service.";
+		cout << "\n\t=================================\n";
+		cout << "\n\tPlease Enter the Service ID: ";
+		cin >> service_input;
+		
+		if (service.chk_serviceid(service_input)) {
+			cout << "\n\t=================================";
+			cout << "\n\tSelect the Type of Service.";
+			cout << "\n\t=================================";
+			cout << "\n\n\tPlease Enter the Type ID: ";
+			cin >> type_input;
 
+			if (service.chk_typeid(service_input, type_input)) {
+				cout << "\n\t=================================";
+				cout << "\n\tSelect the Time of Service.";
+				cout << "\n\t=================================";
+				cout << "\n\n\tPlease Enter the Time ID: ";
+				cin >> time_input;
+
+				if (service.chk_timeid(service_input, type_input, time_input)) {
+					isok = true;
+					break;
+				}
+			}
+		}
+	} while (!isok);
+
+	reserve(service_input, type_input, time_input);
+
+	return;
+}
 
 
 void reservations::reserve(string &sid, string &type_id, string &time_id) {

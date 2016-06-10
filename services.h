@@ -62,10 +62,10 @@ public:
 	void set_temp_service(const string&, service_info*);
 	void print_types(const string&) const;
 	void print_types(const string&, const service_info*, const int&) const;
-	bool chk_typeid(const string&, const service_info*, const int&) const;
+	bool chk_typeid(const string&, const string&) const;
 	int print_times(string&, string&);
 	void print_times(const string&, const service_info*, const int&) const;
-	bool chk_timeid(const string&, const string&, const service_info*, const int&) const;
+	bool chk_timeid(const string&, const string&, const string&) const;
 	void set_selected_service(const string&, const string&, const service_info*, const int&);
 	int get_service_cnt() const;
 	string get_service_id() const;

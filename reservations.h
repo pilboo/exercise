@@ -65,8 +65,10 @@ public:
 	bool check_range_of_time(string&, int);
 	bool check_service(const string&, const string&, const string&);
 	bool check_customer();
+	bool check_customer(const string&, const string&);
+	bool check_c_reservation(const reservation_info*, const int&, const string&, const string&);
 	void print_available_services();
-	void print_all_services(services::service_info*);
+	void input_services();
 	void reserve(string&, string&, string&);
 	~reservations();
 };

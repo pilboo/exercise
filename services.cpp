@@ -119,7 +119,7 @@ void services::select_service(string &service_input) {
 			cout << "\n\n\tPlease Enter the Type ID: ";
 			cin >> type_input;
 
-			if (chk_typeid(type_input, selected_service, selected_cnt)) {
+			if (chk_typeid(service_input, type_input)) {
 				cout << "\n\t=================================";
 				cout << "\n\tSelect the Time of Service.";
 				cout << "\n\t=================================";
@@ -129,7 +129,7 @@ void services::select_service(string &service_input) {
 				cout << "\n\n\tPlease Enter the Time ID: ";
 				cin >> time_input;
 
-				if (chk_timeid(type_input, time_input, selected_service, selected_cnt)) {
+				if (chk_timeid(service_input, type_input, time_input)) {
 					set_selected_service(type_input, time_input, selected_service, selected_cnt);
 					isok = true;
 				}
@@ -227,10 +227,10 @@ void services::print_types(const string &serviceid, const service_info *temp_ser
 	return;
 }
 
-bool services::chk_typeid(const string &type_id, const service_info *temp_service, const int &s_cnt) const{
+bool services::chk_typeid(const string &sid, const string &type_id) const{
 	if (type_id.length() == 2 && isdigit(type_id.at(0)) && isdigit(type_id.at(1))) {
-		for (int i = 0; i < s_cnt; i++) {
-			if ((temp_service + i)->type_id == type_id) 
+		for (int i = 0; i < service_cnt; i++) {
+			if (all_services[i].service_id == sid && all_services[i].type_id == type_id)
 				return true;
 		}
 	}
@@ -268,10 +268,10 @@ void services::print_times(const string &type_id, const service_info *temp_servi
 	return;
 }
 
-bool services::chk_timeid(const string &type_id, const string &time_id, const service_info *temp_service, const int &s_cnt) const {
+bool services::chk_timeid(const string &sid, const string &type_id, const string &time_id) const {
 	if (time_id.length() == 2 && isdigit(time_id.at(0)) && isdigit(time_id.at(1))) {
-		for (int i = 0; i < s_cnt; i++) {
-			if (type_id == temp_service[i].type_id && time_id == temp_service[i].time_id)
+		for (int i = 0; i < service_cnt; i++) {
+			if (all_services[i].service_id == sid && all_services[i].type_id == type_id && all_services[i].time_id == time_id)
 				return true;
 		}
 	}

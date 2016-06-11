@@ -48,7 +48,7 @@ public:
 	void set_reservation_day();
 	bool check_date(const string&);
 	bool check_range_of_date(const string&, const string&, const string&);
-	void set_begin_end_time();
+	void set_begin_end();
 	void print_calendar_header(const string&, const string&, const string&);
 	void print_calendar_body(const string&, const string&, const string&);
 	void print_service_cal(const string&, const string&, const string&);
@@ -63,12 +63,17 @@ public:
 	void set_reservation_time(const string&, const string&, const string&);
 	bool check_time(string&);
 	bool check_range_of_time(string&, int);
+	void set_range_of_time(const string&, const int&);
 	bool check_service(const string&, const string&, const string&);
-	bool check_customer();
+	//bool check_customer();
 	bool check_customer(const string&, const string&);
+	bool check_c_reservation(const string&, const string&);
 	bool check_c_reservation(const reservation_info*, const int&, const string&, const string&);
 	void print_available_services();
 	void input_services();
+	void print_available_time();
+	string get_nextday(const string&, const int&);
+	void print_atime_header(string&, const int&);
 	void reserve(string&, string&, string&);
 	~reservations();
 };

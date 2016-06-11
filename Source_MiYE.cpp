@@ -27,13 +27,12 @@ int main() {
 		
 		string display_opt;
 		bool isok = false;
-		
-		
+	
 		services service;
 		string service_id, type_id, time_id;
 		
 		reservations reservation;
-		reservation.set_customer_id(customer.get_c_id());
+		reservation.set_customer_id(customer_id);
 		do {
 			cout << "\n\n\t=======================================================";
 			cout << "\n\t\tDISPLAY OPTION";
@@ -62,7 +61,7 @@ int main() {
 						
 						// Input a day for the service
 						reservation.set_reservation_day();
-						reservation.set_begin_end_time();
+						reservation.set_begin_end();
 						// Print a calendar of the day
 						reservation.print_calendar_header(service_id, type_id, time_id);
 						reservation.print_calendar_body(service_id, type_id, time_id);
@@ -79,7 +78,14 @@ int main() {
 					reservation.input_services();
 					break;
 				case 3:
+					break;
 				case 4:
+					reservation.print_available_time();
+					reservation.set_reservation_day();
+					reservation.set_reservation_time();
+					reservation.print_available_services();
+					reservation.input_services();
+					break;
 				default:
 					cout << "\n\n\t=== Please enter a valid number (0-4) ===\n\n";
 				}

@@ -109,31 +109,32 @@ void services::select_service(string &service_input) {
 			selected_service = new service_info[selected_cnt];
 
 			set_temp_service(service_input, selected_service);
+			do {
+				cout << "\n\t=================================";
+				cout << "\n\tSelect the Type of Service.";
+				cout << "\n\t=================================";
 
-			cout << "\n\t=================================";
-			cout << "\n\tSelect the Type of Service.";
-			cout << "\n\t=================================";
+				print_types(service_input, selected_service, selected_cnt);
 
-			print_types(service_input, selected_service, selected_cnt);
+				cout << "\n\n\tPlease Enter the Type ID: ";
+				cin >> type_input;
 
-			cout << "\n\n\tPlease Enter the Type ID: ";
-			cin >> type_input;
-
-			if (chk_typeid(service_input, type_input)) {
+			} while (!chk_typeid(service_input, type_input));
+			
+			do {
 				cout << "\n\t=================================";
 				cout << "\n\tSelect the Time of Service.";
 				cout << "\n\t=================================";
 
 				print_times(type_input, selected_service, selected_cnt);
-				
+
 				cout << "\n\n\tPlease Enter the Time ID: ";
 				cin >> time_input;
 
-				if (chk_timeid(service_input, type_input, time_input)) {
-					set_selected_service(type_input, time_input, selected_service, selected_cnt);
-					isok = true;
-				}
-			}
+			} while (!chk_timeid(service_input, type_input, time_input)); 
+
+			set_selected_service(type_input, time_input, selected_service, selected_cnt);
+			isok = true;
 		}
 		
 	} while (!isok);

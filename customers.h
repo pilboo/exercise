@@ -49,6 +49,8 @@ public:
 	void print_c_info() const;						// Display the cusomer's information
 	void print_c_info(const customer_info*) const;	// Display the cusomer's information
 
+	int get_days_left(const string&, const string&);
+
 	string get_c_id() const;			// Returns the customer ID #
 	string get_c_name() const;		// Returns the customer name
 	string get_c_name(const string&);

@@ -167,7 +167,7 @@ bool reservations::check_range_of_date(const string &input_date, const string &b
 	return false;
 }
 
-void reservations::set_begin_end_time() {
+void reservations::set_begin_end() {
 	customer.set_cur();
 	
 	if (reservation_day == customer.get_cur_day()) {
@@ -185,6 +185,7 @@ void reservations::set_begin_end_time() {
 }
 
 void reservations::print_calendar_header(const string &sid, const string &type_id, const string &time_id) {
+	init_reservation_arr(RESERVATION_FILE);
 	string stype = service.get_service_type(sid, type_id);
 	int stime = service.get_service_time(sid, type_id, time_id);
 		
@@ -391,7 +392,7 @@ void reservations::print_customer_cal(const string &sid, const string &type_id, 
 }
 
 void reservations::set_reservation_time() {
-	set_begin_end_time();
+	set_begin_end();
 	string app_time;
 	bool isok = false;
 
@@ -445,9 +446,9 @@ bool reservations::check_time(string &input_time) {
 	return false;
 }
 
-bool reservations::check_range_of_time(string &apptime, int stime) {
+void reservations::set_range_of_time(const string &apptime, const int &stime) {
 	begin_time = apptime;
-		
+
 	int temp_hour = stoi(begin_time.substr(0, 2));
 	int temp_min = stoi(begin_time.substr(3, 2));
 
@@ -456,6 +457,13 @@ bool reservations::check_range_of_time(string &apptime, int stime) {
 	temp_min = temp_min % 60;
 
 	end_time = (temp_hour < 10 ? "0" : "") + to_string(temp_hour) + ":" + (temp_min < 10 ? "0" : "") + to_string(temp_min);
+
+	return;
+}
+
+bool reservations::check_range_of_time(string &apptime, int stime) {
+	set_range_of_time(apptime, stime);
+
 	string btime = (begin_hour < 10 ? "0" : "") + to_string(begin_hour) + ":" + (begin_min < 10 ? "0" : "") + to_string(begin_min);
 	string etime = (end_hour < 10 ? "0" : "") + to_string(end_hour) + ":" + (end_min < 10 ? "0" : "") + to_string(end_min);
 
@@ -524,6 +532,16 @@ bool reservations::check_customer(const string &b_time, const string &e_time) {
 	return isok;
 }
 
+bool reservations::check_c_reservation(const string &r_day, const string &r_time) {
+	for (int i = 0; i < reservation_cnt; i++) {
+		if (all_reservation[i].customer_id == customer_id && all_reservation[i].app_date == r_day &&
+			all_reservation[i].app_start_time <= r_time && all_reservation[i].app_end_time >= r_time
+			&& all_reservation[i].iscancled != "Y") {
+			return true;
+		}
+	}
+	return false;
+}
 bool reservations::check_c_reservation(const reservation_info *temp_rinfo, const int &temp_rcnt, const string &b_time, const string &e_time) {
 	
 	if (temp_rcnt > 0) {
@@ -540,6 +558,7 @@ bool reservations::check_c_reservation(const reservation_info *temp_rinfo, const
 }
 
 void reservations::print_available_services() {
+	init_reservation_arr(RESERVATION_FILE);
 	// Print the header
 	cout << "\n\t===============================================================";
 	cout << "\n\tCUSTOMER: " << customer.get_c_name(customer_id);
@@ -660,12 +679,144 @@ void reservations::input_services() {
 			}
 		}
 	} while (!isok);
-
+	
+	set_range_of_time(reservation_time, service.get_service_time(service_input, type_input, time_input));
 	reserve(service_input, type_input, time_input);
 
 	return;
 }
 
+// Display all the availabe time slots for the customer by the time of check-out
+void reservations::print_available_time() {
+	init_reservation_arr(RESERVATION_FILE);
+	customer.set_cur();
+	string current_day = customer.get_cur_day();
+	string chout_day = customer.get_chout_date(customer_id);
+
+	int days_left = customer.get_days_left(current_day, customer.get_chout_date(customer_id));
+
+	// Print the calendar header
+	cout << "\n\t===================================================================================================";
+	cout << "\n\tCUSTOMER: " << customer.get_c_name(customer_id);
+	cout << "\n\tTODAY: " << current_day;
+	cout << "\n\tCHECK-OUT: " << customer.get_chout_date(customer_id);
+	cout << "\n\t---------------------------------------------------------------------------------------------------"; 
+	cout << "\n\t\t\tList of All Available Time Slot";
+	cout << "\n\t===================================================================================================";
+	cout << "\n\t| TIME "; 
+
+	int counter = 0;
+	//bool go_next = false;
+
+	string start_day = current_day;
+	string end_day = (days_left < 7) ? get_nextday(start_day, days_left) : get_nextday(start_day, 6);
+	string answer;
+	
+	int day_cnt = days_left;
+	int turn = days_left / 7;
+
+	for (int i = 0; i <= turn; i++) {
+		if (turn > 0 && counter == 7) {
+			bool isok = false;
+			char ch;
+			do {
+				cout << "\n\t=== SEE MORE? (Y or N): ";
+				cin >> answer;
+
+				if (answer.length() == 1 && isalpha(ch = answer.at(0)) && (toupper(ch) == 'Y' || toupper(ch) == 'N')) {
+					isok = true;
+				}
+				else {
+					isok = false;
+					cout << "\n\t=== [ERROR] Please Enter Y or N ===";
+				}
+			} while (!isok);
+
+			if (isalpha(ch) && toupper(ch) == 'Y') {
+				//go_next = true;
+				start_day = current_day;
+				end_day = (day_cnt < 7) ? get_nextday(start_day, day_cnt) : get_nextday(start_day, 6);
+				counter = 0;
+				cout << "\n\n\t===================================================================================================";
+				cout << "\n\t| TIME ";
+			}
+			else {
+				//go_next = false;
+				break;
+			}
+		} // if (turn > 0 && counter == 7)
+		do {
+			cout << "| " << current_day << " ";
+			current_day = get_nextday(current_day, 1);
+
+			if (++counter == 7 || day_cnt == 0) {
+				cout << "|";
+				cout << "\n\t---------------------------------------------------------------------------------------------------";
+			}
+			day_cnt --;
+		} while (customer.get_days_left(current_day, end_day) >= 0);
+
+		//cout << "\n\nstart: " << start_day << ", curr: " << current_day << ", end: " << end_day << endl;
+		// Display timeslotch
+		string current_time;
+		int current_hour = 8;
+		int current_min = 0;
+
+		for (int i = 0; i <= 24; i++) {
+			day_cnt += counter;
+
+			counter = 0;
+			current_day = start_day;
+			current_time = ((current_hour < 10) ? "0" : "") + to_string(current_hour) + ":" +
+				((current_min < 10) ? "0" : "") + to_string(current_min);
+
+			cout << "\n\t| " << current_time;
+
+			do {
+				cout << "|" << setw(12) << (check_c_reservation(current_day, current_time) ? "XXXXXXXXXXXX" : " ");
+				current_day = get_nextday(current_day, 1);
+
+				if (++counter == 7 || day_cnt == 0) 
+					cout << "|";
+				day_cnt--;
+			} while (customer.get_days_left(current_day, end_day) >= 0);
+
+			current_min += 30;
+			current_hour += current_min / 60;
+			current_min = current_min % 60;
+
+			if (i==24) 
+				cout << "\n\t---------------------------------------------------------------------------------------------------";
+		}
+	}
+	return;
+}
+
+string reservations::get_nextday(const string &today, const int &days) {
+	string nextday;
+	
+	int m = stoi(today.substr(0, 2));
+	int d = stoi(today.substr(3, 2));
+	int y = stoi(today.substr(6, 4));
+
+	tm t = {};
+	t.tm_year = y - 1900;
+	t.tm_mon = m - 1;
+	t.tm_mday = d;
+
+	t.tm_mday += days;
+
+	mktime(&t);
+
+	y = t.tm_year + 1900;
+	m = t.tm_mon + 1;
+	d = t.tm_mday;
+
+	nextday = ((m < 10) ? "0" : "") + to_string(m) + "-" + ((d < 10) ? "0" : "") + to_string(d) +
+		"-" + to_string(y);
+
+	return nextday;
+}
 
 void reservations::reserve(string &sid, string &type_id, string &time_id) {
 	customer.set_cur();

@@ -175,8 +175,8 @@ bool customers::check_stay(const customer_info *c_info) {
 		chout = c_info->out_date;
 
 	set_cur();
-
-	if (!(chin <= cur_day && chout >= cur_day)) {
+	
+	if ((get_days_left(chin, cur_day) <= 0 || get_days_left(cur_day, chout) <= 0) && (chin != chout)) {
 		cout << "\n\n\t=== [No Within Stay Customer] ===\n";
 		return false;
 	}
@@ -234,6 +234,31 @@ void customers::print_c_info(const customer_info *c_info) const {
 	cout << "\n\t=================================================";
 
 	return;
+}
+
+int customers::get_days_left(const string &b_date, const string &e_date) {
+	time_t bdate, edate;
+	struct tm tm_bdate, tm_edate;
+	
+	time(&bdate);
+	time(&edate);
+	localtime_s(&tm_bdate, &bdate);
+	localtime_s(&tm_edate, &edate);
+
+	tm_bdate.tm_mon = stoi(b_date.substr(0, 2)) - 1;
+	tm_bdate.tm_mday = stoi(b_date.substr(3, 2));
+	tm_bdate.tm_year = stoi(b_date.substr(6, 4)) - 1900;
+	
+	tm_edate.tm_mon = stoi(e_date.substr(0, 2)) - 1;
+	tm_edate.tm_mday = stoi(e_date.substr(3, 2));
+	tm_edate.tm_year = stoi(e_date.substr(6, 4)) - 1900;
+	
+
+	bdate = mktime(&tm_bdate);
+	edate = mktime(&tm_edate);
+
+	int days_left = difftime(edate, bdate) / (60*60*24);
+	return days_left;
 }
 
 string customers::get_c_id() const {

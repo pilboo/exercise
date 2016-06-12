@@ -1,6 +1,5 @@
 #include "reservations.h"
 
-
 // Default constructor
 reservations::reservations() {
 	reservation_cnt = 0;
@@ -167,6 +166,7 @@ bool reservations::check_range_of_date(const string &input_date, const string &b
 	return false;
 }
 
+// Set up the beginning and ending time of the calendar
 void reservations::set_begin_end() {
 	customer.set_cur();
 	
@@ -183,6 +183,7 @@ void reservations::set_begin_end() {
 
 	return;
 }
+
 
 void reservations::print_calendar_header(const string &sid, const string &type_id, const string &time_id) {
 	init_reservation_arr(RESERVATION_FILE);
@@ -756,7 +757,6 @@ void reservations::print_available_time() {
 			day_cnt --;
 		} while (customer.get_days_left(current_day, end_day) >= 0);
 
-		//cout << "\n\nstart: " << start_day << ", curr: " << current_day << ", end: " << end_day << endl;
 		// Display timeslotch
 		string current_time;
 		int current_hour = 8;
@@ -785,7 +785,7 @@ void reservations::print_available_time() {
 			current_hour += current_min / 60;
 			current_min = current_min % 60;
 
-			if (i==24) 
+			if (i == 24) 
 				cout << "\n\t---------------------------------------------------------------------------------------------------";
 		}
 	}

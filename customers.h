@@ -41,7 +41,7 @@ private:
 public:
 	customers();					// Default constructor
 	customers(customers&);
-	void set_customer(string&);		// Function for keeping the customer informtion matching with customer ID# the clerk input
+	bool set_customer(string&);		// Function for keeping the customer informtion matching with customer ID# the clerk input
 	bool id_check(const string&);	// Custeomr ID# input validation
 	bool isfound(const string&, customer_info*);	// Attempts to find out the customer's information, and to keeping the information
 	bool check_stay(const customer_info*);	// Checks if both a within stay and overnight customer
@@ -55,7 +55,9 @@ public:
 	string get_c_name() const;		// Returns the customer name
 	string get_c_name(const string&);
 	string get_chin_date() const;		// Returns the check-in date
+	string get_chin_date(const string&) const;		// Returns the check-in date
 	string get_chin_time() const;		// Returns the check-in time
+	string get_chin_time(const string&) const;		// Returns the check-in date
 	string get_chout_date() const;	// Returns the check-out date
 	string get_chout_date(const string&);	// Returns the check-out date
 	string get_chout_time() const;	// Returns the check-out time

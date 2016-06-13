@@ -82,6 +82,24 @@ void services::init_service_arr(const string &txt) {
 	return;
 }
 
+bool services::check_service_choice(string &s_input) {
+	if (s_input == "Q" || s_input == "q")
+		return true;
+	else
+		return false;
+}
+
+void services::print_service_choice(string &s_input) {
+	
+	cout << "\n\n\t=================================";
+	cout << "\n\tSelect the Service.";
+	cout << "\n\t=================================\n";
+	print_services();
+	cout << "\n\tPlease Enter the Service ID (3-digit number, Q for Reservation Option): ";
+	cin >> s_input;
+
+}
+
 void services::select_service(string &service_input) {
 	bool isok = false;
 	string type_input, time_input;
@@ -92,19 +110,7 @@ void services::select_service(string &service_input) {
 	int selected_cnt = 0;
 
 	do {
-		cout << "\n\n\t=================================";
-		cout << "\n\tSelect the Service.";
-		cout << "\n\t=================================\n";
-
-		print_services();
-		
-		cout << "\n\tPlease Enter the Service ID (3-digit number, D for Display Option): ";
-		cin >> service_input;
-
-		if (service_input == "D" || service_input == "d") {
-			cout << "\n\t=== Returning to Display Option ===\n";
-			break;
-		} else if (chk_serviceid(service_input)) {
+		if (chk_serviceid(service_input)) {
 			selected_cnt = set_temp_count(service_input);
 			selected_service = new service_info[selected_cnt];
 

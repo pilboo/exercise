@@ -88,43 +88,30 @@ void customers::init_customer_arr(const string &txt_file) {
 	return;
 }
 /*
-// The member function of set_customer accepts the customer ID#,
-// and stores the customer information into the member variables.
+The member function of set_customer accepts the customer ID#,
+and stores the customer information into the member variables.
 */
-void customers::set_customer(string &input_id) {
-
+bool customers::set_customer(string &input_id) {
 	bool isok = false;
 	customer_info *found_customer = nullptr;
 	found_customer = new customer_info;
 
-	do {	// Allows the clerk to input 3-digit number as a customer ID#
-		cout << "\n\tEnter the Customer ID# (000 - 999, M for Main Menu): ";
-		cin >> input_id;
+	if (id_check(input_id) && isfound(input_id, found_customer) && check_stay(found_customer)) {
 
-		if (input_id == "M" || input_id == "m") {
-			cout << "\n\t=== Returning to Main Menu ===\n";
-			break;
-		}
+		c_id = found_customer->cid;
+		c_name = found_customer->cname;
+		chin_date = found_customer->in_date;
+		chin_time = found_customer->in_time;
+		chout_date = found_customer->out_date;
+		chout_time = found_customer->out_time;
 
-		if (id_check(input_id) && isfound(input_id, found_customer) && check_stay(found_customer)) {
-
-			c_id = found_customer->cid;
-			c_name = found_customer->cname;
-			chin_date = found_customer->in_date;
-			chin_time = found_customer->in_time;
-			chout_date = found_customer->out_date;
-			chout_time = found_customer->out_time;
-
-			isok = true;
-			break;
-		}
-
-	} while (!isok);
+		isok = true;
+	}
 
 	delete found_customer;
 	found_customer = nullptr;
 
-	return;
+	return isok;
 }
 
 bool customers::id_check(const string &input_str) {
@@ -197,7 +184,7 @@ void customers::set_cur() {
 	time(&current_time);
 	localtime_s(&local_time, &current_time);
 
-	int c_min = local_time.tm_hour;				// Get the current minutes
+	int c_min = local_time.tm_min;				// Get the current minutes
 	int c_hour = local_time.tm_hour;			// Get the current hours
 	int c_day = local_time.tm_mday;			// Get the day of this month
 	int c_month = local_time.tm_mon + 1;		// Get this month
@@ -257,7 +244,7 @@ int customers::get_days_left(const string &b_date, const string &e_date) {
 	bdate = mktime(&tm_bdate);
 	edate = mktime(&tm_edate);
 
-	int days_left = difftime(edate, bdate) / (60*60*24);
+	int days_left = (int)difftime(edate, bdate) / (60*60*24);
 	return days_left;
 }
 
@@ -284,25 +271,40 @@ string customers::get_chin_date() const {
 	return chin_date;
 }
 
+string customers::get_chin_date(const string &cid) const {
+	string str;
+	for (int i = 0; i < customer_cnt; i++) {
+		if (all_customer[i].cid == cid)
+			str = all_customer[i].in_date;
+	}
+
+	return str;
+}
+
 string customers::get_chin_time() const {
 	return chin_time;
 }
 
+string customers::get_chin_time(const string &cid) const {
+	string str;
+	for (int i = 0; i < customer_cnt; i++) {
+		if (all_customer[i].cid == cid)
+			str = all_customer[i].in_time;
+	}
+
+	return str;
+}
 string customers::get_chout_date() const {
 	return chout_date;
 }
 
 string customers::get_chout_date(const string &cid) {
-	string out_date;
-
+	string str;
 	for (int i = 0; i < customer_cnt; i++) {
-		if (all_customer[i].cid == cid) {
-			out_date = all_customer[i].out_date;
-			break;
-		}
+		if (all_customer[i].cid == cid) 
+			str = all_customer[i].out_date;
 	}
-
-	return out_date;
+	return str;
 }
 
 string customers::get_chout_time() const {
@@ -310,14 +312,12 @@ string customers::get_chout_time() const {
 }
 
 string customers::get_chout_time(const string &cid) {
-	string out_time;
+	string str;
 	for (int i = 0; i < customer_cnt; i++) {
-		if (all_customer[i].cid == cid) {
-			out_time = all_customer[i].out_time;
-			break;
-		}
+		if (all_customer[i].cid == cid) 
+			str = all_customer[i].out_time;
 	}
-	return out_time;
+	return str;
 }
 
 string customers::get_cur_day() const {

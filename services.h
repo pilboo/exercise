@@ -55,8 +55,10 @@ public:
 
 	services();
 	services(services&);
-	void select_service(string&);
+	bool check_service_choice(string&);
+	void print_service_choice(string&);
 	void print_services();
+	void select_service(string&);
 	bool chk_serviceid(const string&);
 	int set_temp_count(const string&);
 	void set_temp_service(const string&, service_info*);

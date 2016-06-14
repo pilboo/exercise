@@ -52,6 +52,7 @@ public:
 	bool chk_typeid(const string&, const string&) const;
 	int print_times(string&, string&);
 	void print_times(const string&, const service_info*, const int&) const;
+	bool chk_timeid(const string&, const string&) const;
 	bool chk_timeid(const string&, const string&, const string&) const;
 	void set_selected_service(const string&, const string&, const service_info*, const int&);
 	int get_service_cnt() const;
@@ -72,9 +73,19 @@ public:
 	void print_all_serivces();
 	// For maintenance
 	void add_new_service();
+	//void add_new_types(const string&);
 	void add_new_types(const int&, string*);
 	void add_new_times(const int&, int*, double*, int*);
 	bool check_int(const string&);
+	bool check_double(const string&);
+	void print_service_spec(const string&);
+	void edit_service(const string&);
+	void change_service_name(const string&);
+	void change_type_name(const string&);
+	void change_service_time(const string&);
+	void change_service_price(const string&);
+	void change_service_limit(const string&);
+	void save_the_file();
 	~services();
 };
 

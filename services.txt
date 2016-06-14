@@ -18,7 +18,7 @@
 004,03,02,Speciality treatment,herbal body wrap,90,3.5,1
 004,04,01,Speciality treatment,botanical mud wrap,60,3.5,1
 004,04,02,Speciality treatment,botanical mud wrap,90,3.5,1
-005,01,01,Yoga Practice Session,normal,60,3.5,10
-005,01,02,Yoga Practice Session,normal,90,5.5,10
-005,02,01,Yoga Practice Session,hot & hard,60,3.5,10
-005,02,02,Yoga Practice Session,hot & hard,90,5.5,10
+005,01,01,Yoga Session,normal,60,3.5,10
+005,01,02,Yoga Session,normal,90,5.5,10
+005,02,01,Yoga Session,hart,60,3.5,10
+005,02,02,Yoga Session,hart,90,5.5,10

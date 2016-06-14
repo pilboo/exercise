@@ -261,6 +261,17 @@ void services::print_times(const string &type_id, const service_info *temp_servi
 	return;
 }
 
+bool services::chk_timeid(const string &sid, const string &time_id) const {
+	if (time_id.length() == 2 && isdigit(time_id.at(0)) && isdigit(time_id.at(1))) {
+		for (int i = 0; i < service_cnt; i++) {
+			if (all_services[i].service_id == sid && all_services[i].time_id == time_id)
+				return true;
+		}
+	}
+	cout << "\n\t=== [ERROR] Please Enter Valid Time ID ===";
+	return false;
+}
+
 bool services::chk_timeid(const string &sid, const string &type_id, const string &time_id) const {
 	if (time_id.length() == 2 && isdigit(time_id.at(0)) && isdigit(time_id.at(1))) {
 		for (int i = 0; i < service_cnt; i++) {
@@ -580,8 +591,10 @@ void services::add_new_service() {
 			<< temp[i].service_price << ","
 			<< temp[i].service_limit;
 
-		cout << "\n\n\t===[New Service Was Successfully Added]===";
+		
 	}
+
+	cout << "\n\n\t===[New Service Was Successfully Added]===";
 		
 	out_sfile.close();
 	init_service_arr(SERVICE_FILE);
@@ -594,7 +607,6 @@ void services::add_new_service() {
 
 	return;
 }
-
 
 void services::add_new_types(const int &type_cnt, string *new_stype) {
 	bool isok = false;
@@ -675,25 +687,12 @@ void services::add_new_times(const int &time_cnt, int *new_stime, double *new_sp
 			cout << "\n\tEnter the Service Price for the Service Time " << new_stime[i] << " Minutes: ";
 			getline(cin, input);
 
-			if (input.length() > 0) {
-				char ch;
-				for (int j = 0; j < (int)input.length(); j++) {
-					ch = input.at(j);
-					if (isdigit(ch))
-						isok = true;
-					else if (ch = '.') 
-						isok = true;
-					else {
-						isok = false;
-						break;
-					}
-				}
+			if (!check_double(input)) {
+				cout << "\n\t===[ERROR] Please Enter Valid Double Numbers ===";
+				isok = false;
 			}
 			else
-				isok = false;
-
-			if (!isok)
-				cout << "\n\t===[ERROR] Please Enter Valid Double Numbers ===";
+				isok = true;
 		} while (!isok);
 		new_sprice[i] = stod(input);
 
@@ -732,11 +731,311 @@ bool services::check_int(const string &input) {
 		char ch;
 		for (int i = 0; i < (int)input.length(); i++) {
 			ch = input.at(i);
-			if (!isdigit(ch))
-				return false;
+			if (isdigit(ch))
+				return true;
 		}
 	}
-	return true;
+	return false;
+}
+
+bool services::check_double(const string &input) {
+	int l = (int)input.length();
+	if (l > 0) {
+		char ch;
+		for (int i = 0; i < l; i++) {
+			ch = input.at(i);
+			if (isdigit(ch) || ((i != 0 || i != l - 1) && ch == ','))
+				return true;
+		}
+	}
+	return false;
+}
+
+void services::print_service_spec(const string &sid) {
+	string type_id = "", time_id = "";
+
+	for (int i = 0; i < service_cnt; i++) {
+		if (all_services[i].service_id == sid && all_services[i].type_id != type_id) {
+			type_id = all_services[i].type_id;
+			cout << "\n\tType: [" << type_id << "] "
+				<< (all_services[i].service_type.length() > 0 ? all_services[i].service_type : "No Type");
+		}
+
+		if (all_services[i].service_id == sid && all_services[i].time_id != time_id) {
+			time_id = all_services[i].time_id;
+			cout << "\n\t\tTime: [" << time_id << "] " << all_services[i].service_time << " min"
+				<< " | Price: $" << all_services[i].service_price
+				<< " | Limit(*): " << all_services[i].service_limit;
+		}
+	}
+	cout << "\n\t---------------------------------------------------------------------------------";
+	cout << "\n\t*Limit means how many people can use the service at the same time. 0 is no limit.";
+	
+}
+
+void services::edit_service(const string &sid) {
+	string editing_choice;
+	bool flag_for_editing = false;
+
+	do {
+		cout << "\n\n\t=================================================================================";
+		cout << "\n\tEDITING THE SERVICE of " << get_service_name(sid);
+		cout << "\n\t---------------------------------------------------------------------------------";
+		print_service_spec(sid);
+		cout << "\n\t---------------------------------------------------------------------------------";
+		cout << "\n\t 1. Change Service Name";
+		cout << "\n\t 2. Change Type Name";
+		cout << "\n\t 3. Change Time";
+		cout << "\n\t 4. Change Price";
+		cout << "\n\t 5. Change Limit";
+		cout << "\n\t";
+		cout << "\n\t 0. Return to Selecting Services";
+		cout << "\n\t---------------------------------------------------------------------------------";
+		cout << "\n\tEnter Your Choice: ";
+		getline(cin, editing_choice);
+
+		if (editing_choice.length() == 1 && isdigit(editing_choice.at(0))) {
+			string type_id, time_id, input;
+
+			switch (stoi(editing_choice)) {
+			case 0:
+				flag_for_editing = true;
+				cout << "\n\t=== Returning to Selecting Services ===\n";
+				break;
+			case 1:
+				change_service_name(sid);
+				break;
+			case 2:
+				change_type_name(sid);
+				break;
+			case 3:
+				change_service_time(sid);
+				break;
+			case 4:
+				change_service_price(sid);
+				break;
+			case 5:
+				change_service_limit(sid);
+				break;
+			default:
+				cout << "\n\n\t=== [ERROR] Please Enter a Number (0-5) ===\n";
+			} // End of switch
+		}
+		else {
+			cout << "\n\n\t=== [ERROR] Please Enter a Valid Menu: A Digit Number (0-5) ===\n";
+			flag_for_editing = false;
+		}
+	} while (!flag_for_editing);
+}
+
+void services::change_service_name(const string &sid) {
+	bool isok = false;
+	string input;
+	do {
+		cout << "\n\tInput New Service Name: ";
+		getline(cin, input);
+		
+		if (input.length() > 0) {
+			for (int i = 0; i < service_cnt; i++) {
+				if (all_services[i].service_id == sid) 
+					all_services[i].service_name = input;
+			}
+			isok = true;
+		}
+		else {
+			cout << "\n\t=== [ERROR] No Input Found. Please Enter New Service Name ===";
+			isok = false;
+		}
+	}while (!isok);
+
+	save_the_file();
+
+	return;
+}
+
+void services::change_type_name(const string &sid) {
+	bool isok = false;
+	string type_id, input;
+
+	do {
+		cout << "\n\tEnter the Type ID#: ";
+		getline(cin, type_id);
+
+		if (chk_typeid(sid, type_id)) {
+
+			cout << "\n\tEnter New Type Name: ";
+			getline(cin, input);
+
+			if (input.length() > 0) {
+				for (int i = 0; i < service_cnt; i++) {
+					if (all_services[i].service_id == sid && all_services[i].type_id == type_id) {
+						all_services[i].service_type = input;
+					}
+				}
+				isok = true;
+			}
+			else {
+				cout << "\n\t=== [ERROR] No Input Found. Please Enter New Type Name ===";
+				isok = false;
+			}
+		}
+		else
+			isok = false;
+	} while (!isok);
+
+
+
+	return;
+}
+
+void services::change_service_time(const string &sid) {
+	bool isok = false;
+	string type_id, time_id, input;
+
+	do {
+		cout << "\n\tEnter the Type ID#: ";
+		getline(cin, type_id);
+
+		if (chk_typeid(sid, type_id)) {
+			cout << "\n\tEnter the Time ID#: ";
+			getline(cin, time_id);
+
+			if (chk_timeid(sid, time_id)) {
+
+				cout << "\n\tEnter New Time: ";
+				getline(cin, input);
+
+				if (check_int(input)) {
+					for (int i = 0; i < service_cnt; i++) {
+						if (all_services[i].service_id == sid && 
+							all_services[i].type_id == type_id &&
+							all_services[i].time_id == time_id) {
+							all_services[i].service_time = stoi(input);
+						}
+					}
+					isok = true;
+				}
+				else {
+					cout << "\n\t=== [ERROR] No Input Found. Please Enter New Service Time ===";
+					isok = false;
+				}
+			}
+			else
+				isok = false;
+		}
+	} while (!isok);
+
+	save_the_file();
+	return;
+}
+
+void services::change_service_price(const string &sid) {
+	bool isok = false;
+	string type_id, time_id, input;
+
+	do {
+		cout << "\n\tEnter the Type ID#: ";
+		getline(cin, type_id);
+
+		if (chk_typeid(sid, type_id)) {
+
+			cout << "\n\tEnter the Time ID#: ";
+			getline(cin, time_id);
+
+			if (chk_timeid(sid, time_id)) {
+
+				cout << "\n\tEnter New Price: ";
+				getline(cin, input);
+
+				if (check_double(input)) {
+					for (int i = 0; i < service_cnt; i++) {
+						if (all_services[i].service_id == sid && 
+							all_services[i].type_id == type_id &&
+							all_services[i].time_id == time_id) {
+							all_services[i].service_price = stod(input);
+						}
+					}
+					isok = true;
+				}
+				else {
+					cout << "\n\t=== [ERROR] No Input Found. Please Enter New Service Price ===";
+					isok = false;
+				}
+			}
+			else
+				isok = false;
+		}
+	} while (!isok);
+
+	save_the_file();
+	return;
+}
+
+void services::change_service_limit(const string &sid) {
+	bool isok = false;
+	string type_id, time_id, input;
+
+	do {
+		cout << "\n\tEnter the Type ID#: ";
+		getline(cin, type_id);
+
+		if (chk_typeid(sid, type_id)) {
+
+			cout << "\n\tEnter the Time ID#: ";
+			getline(cin, time_id);
+
+			if (chk_timeid(sid, time_id)) {
+
+				cout << "\n\tEnter New Service Limit: ";
+				getline(cin, input);
+
+				if (check_int(input)) {
+					for (int i = 0; i < service_cnt; i++) {
+						if (all_services[i].service_id == sid &&
+							all_services[i].type_id == type_id &&
+							all_services[i].time_id == time_id) {
+							all_services[i].service_limit = stoi(input);
+						}
+					}
+					isok = true;
+				}
+				else {
+					cout << "\n\t=== [ERROR] No Input Found. Please Enter New Service Limit ===";
+					isok = false;
+				}
+			}
+			else
+				isok = false;
+		}
+	} while (!isok);
+
+	save_the_file();
+	return;
+}
+
+void services::save_the_file() {
+
+	ofstream out_sfile;
+	//out_sfile.open(SERVICE_FILE, ios::out);
+
+	for (int i = 0; i < service_cnt; i++) {
+		out_sfile << ((service_cnt == 0) ? "" : "\n") << all_services[i].service_id << ","
+			<< all_services[i].type_id << ","
+			<< all_services[i].time_id << ","
+			<< all_services[i].service_name << ","
+			<< all_services[i].service_type << ","
+			<< all_services[i].service_time << ","
+			<< all_services[i].service_price << ","
+			<< all_services[i].service_limit;
+	}
+
+	cout << "\n\n\t===[The Service File Was Successfully Updated]===";
+
+	out_sfile.close();
+	//init_service_arr(SERVICE_FILE);
+
+	return;
+
 }
 
 services::~services() {

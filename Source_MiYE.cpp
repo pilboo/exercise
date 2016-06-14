@@ -22,7 +22,7 @@ int main() {
 		cout << "\n\t                    OPERATION MENU";
 		cout << "\n\t-------------------------------------------------------";
 		cout << "\n\n\t 1. For Spa Management\t\t2. For Maintenance";
-		cout << "\n\n\t 0. Quit the Program";
+		cout << "\n\n\n\t 0. Quit the Program";
 		cout << "\n\n\t-------------------------------------------------------";
 		cout << "\n\tEnter Your Choice (1-2 or 0 to quit): ";
 		getline(cin, op_choice);
@@ -262,49 +262,52 @@ int main() {
 								service.print_services();
 								cout << "\n\t---------------------------------------------------------";
 								cout << "\n\t 1. Add a New Service";
-								cout << "\n\t 2. Input a Service ID# for Change";
-								cout << "\n\t";
+								cout << "\n\t 2. Edit a Service";
 								cout << "\n\t 0. Return to the Maintenance Menu";
 								cout << "\n\t---------------------------------------------------------";
-								cout << "\n\tEnter Your Choice or Input the Service ID#: ";
-								getline(cin, mt_choice);
+								cout << "\n\tEnter Your Choice: ";
+								getline(cin, mt_choice);								
 
-								if (mt_choice == "0") {
-									flag_for_mt = true;
-									cout << "\n\t=== Returning to Maintenance Menu ===\n";
-									break;
-								}	// End of if (mt_choice == "0")
-								else if (mt_choice == "1") {
-									service.add_new_service();
-								}	// End of else if (mt_choice == "1")
-								else if (mt_choice == "2") {
-									cout << "\n\tInput the Service ID#: ";
-									getline(cin, mt_choice);
-									
-								}	// End of if (mt_choice == "0")
-								
-								/*
-								string tp_choice;
-								
-								if (mt_choice != "1" && service.chk_serviceid(mt_choice)){
-									cout << "\n\n\t=========================================================";
-									cout << "\n\t [" << mt_choice << "] " << service.get_service_name(mt_choice);
-									cout << "\n\t---------------------------------------------------------";
-									service.print_types(mt_choice);
-									cout << "\n\t---------------------------------------------------------";
-									cout << "\n\t 1. Add a New Type";
-									cout << "\n\t 2. Input a Type ID# for Change";
-									cout << "\n\t";
-									cout << "\n\t 0. Return to Selecting Service Menu";
-									cout << "\n\t---------------------------------------------------------";
-									cout << "\n\tEnter Your Choice or Input the Type ID#:";
-									cin >> tp_choice;
+								if (mt_choice.length() == 1 && isdigit(mt_choice.at(0))) {									
+									string m_service_choice;
+									bool flag_for_service = false;;
 
-								}	// End of if (service.chk_serviceid(mt_choice))
-								*/
+									switch (stoi(mt_choice)) {
+									case 0:
+										flag_for_mt = true;
+										cout << "\n\t=== Returning to Maintenance Menu ===\n";
+										break;
+									case 1:
+										service.add_new_service();
+										break;
+									case 2:
+										do {
+											cout << "\n\tInput the Service ID#: ";
+											getline(cin, m_service_choice);
+
+											if (service.chk_serviceid(m_service_choice)) {
+												service.edit_service(m_service_choice);
+
+												flag_for_service = true;
+											}
+											else {
+												flag_for_service = false;
+											}
+										} while (!flag_for_service);
+
+										break;
+									default:
+										cout << "\n\n\t=== [ERROR] Please Enter a Number (0-2) ===\n";
+									} // End of switch
+								}	// End of if (mt_choice.length() == 1 && isdigit(mt_choice.at(0)))
+								else {
+									cout << "\n\n\t=== [ERROR] Please Enter a Valid Menu: A Digit Number (0-2) ===\n";
+									flag_for_mt = false;
+								}	// End of if (mt_choice.length() == 1 && isdigit(mt_choice.at(0)))
 							} while (!flag_for_mt);
 							break;
 						case 2:
+
 							break;
 						default:
 							cout << "\n\n\r\t [ERROR] Please Enter a Number (0-2) ===\n";

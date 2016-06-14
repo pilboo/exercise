@@ -81,6 +81,7 @@ public:
 	string get_nextday(const string&, const int&);
 	void reserve(string&, string&, string&);
 	reservation_info *get_all_reservation();
+	void report_reservation();
 	~reservations();
 };
 

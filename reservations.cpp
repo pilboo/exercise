@@ -735,7 +735,8 @@ void reservations::print_available_time() {
 	string chout_day = customer.get_chout_date(customer_id);
 
 	int days_left = customer.get_days_left(current_day, customer.get_chout_date(customer_id));
-
+	//cout << days_left; //debug
+	
 	// Print the calendar header
 	cout << "\n\t===================================================================================================";
 	cout << "\n\tCUSTOMER: " << customer.get_c_name(customer_id);
@@ -835,6 +836,7 @@ void reservations::print_available_time() {
 				cout << "\n\t---------------------------------------------------------------------------------------------------";
 		}
 	}
+	
 	return;
 }
 
@@ -843,7 +845,8 @@ void reservations::print_available_time(const string &sid, const string &type_id
 	string startday, starttime, endday, endtime;
 	set_period(startday, starttime, endday, endtime);
 	
-	int days_left = customer.get_days_left(startday, endday);
+	int days_left = customer.get_days_left(endday, startday);
+	
 	
 	// Print the calendar header
 	cout << "\n\t===================================================================================================";
@@ -943,7 +946,7 @@ void reservations::print_available_time(const string &sid, const string &type_id
 				cout << "\n\t---------------------------------------------------------------------------------------------------";
 		}
 	}
-
+	
 	return;
 }
 
@@ -1076,6 +1079,57 @@ void reservations::reserve(string &sid, string &type_id, string &time_id) {
 
 reservations::reservation_info *reservations::get_all_reservation() {
 	return all_reservation;
+}
+
+void reservations::report_reservation() {
+	bool isok = false;
+	string input, month, year;
+	//do {
+
+		cout << "\n\tPlease Enter the Month and Year for the Report (mm-yyyy): ";
+		getline(cin, input);
+
+		month = input.substr(0, 2);
+		year = input.substr(3, 4);
+
+		cout << "\n\t===========================================================";
+		cout << "\n\t\tMonthly Report for " << month << " - " << year;
+		cout << "\n\t-----------------------------------------------------------";
+
+		int app_cnt = 0, c_cnt = 0;
+
+		string sid, type_id, time_id;
+		string sname, stype;
+		int stime = 0;
+		double sprice;
+		double sales = 0.0;
+		
+		for (int i = 0; i < reservation_cnt; i++) {
+			if (all_reservation[i].app_date.substr(0, 2) == month &&
+				all_reservation[i].app_date.substr(6, 4) == year) {
+				app_cnt++;
+								
+				sid = all_reservation[i].service_id;
+				type_id = all_reservation[i].type_id;
+				time_id = all_reservation[i].time_id;
+
+				sprice = service.get_service_price(sid, type_id, time_id);
+				stime = service.get_service_time(sid, type_id, time_id);
+
+				if (all_reservation[i].iscanceled == "Y")
+					c_cnt++;
+				else
+					sales += (sprice * stime);
+			}
+		}
+		cout << "\n\tTotal Number of Reservation: " << app_cnt;
+		cout << "\n\tTotal Number of Cancellation: " << c_cnt;
+		cout << "\n\tTotal Amount of Sales: $" << setprecision(2) << fixed << showpoint << sales;
+		cout << "\n\t===========================================================";
+
+	//} while (!isok);
+
+	return;
 }
 
 reservations::~reservations() {

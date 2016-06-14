@@ -307,7 +307,7 @@ int main() {
 							} while (!flag_for_mt);
 							break;
 						case 2:
-
+							reservation.report_reservation();
 							break;
 						default:
 							cout << "\n\n\r\t [ERROR] Please Enter a Number (0-2) ===\n";

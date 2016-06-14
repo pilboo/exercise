@@ -67,7 +67,7 @@ void services::init_service_arr(const string &txt) {
 }
 
 bool services::check_service_choice(string &s_input) {
-	if (s_input == "0")
+	if (s_input == "0" || s_input == "Q" || s_input == "q")
 		return true;
 	else
 		return false;
@@ -379,8 +379,10 @@ double services::get_service_price(const string &sid, const string &type_id, con
 	double s_price = 0.0;
 
 	for (int i = 0; i < service_cnt; i++) {
+		
 		if (all_services[i].service_id == sid && all_services[i].type_id == type_id &&
 			all_services[i].time_id == time_id) {
+			
 			s_price = all_services[i].service_price;
 			break;
 		}

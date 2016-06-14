@@ -25,10 +25,10 @@ void cancel_reservation::set_cancel_date_time(string &c_day) {
 		cout << "\n\n\t============================================================================";
 		cout << "\n\tSelect the Day of Cancelation between " << start_day << " and " << end_day;
 		cout << "\n\t============================================================================";
-		cout << "\n\tPlease Enter the Day of Cancelation (mm-dd-yyyy or Q for Previous Menu): ";
+		cout << "\n\tPlease Enter the Day of Cancelation (mm-dd-yyyy or 0 for Previous Menu): ";
 		getline(cin, c_day);
 
-		if (c_day == "Q" || c_day == "q") {
+		if (c_day == "0") {
 			break;
 		}
 		else if (reservation.check_date(c_day) && reservation.check_range_of_date(c_day, start_day, end_day)) {

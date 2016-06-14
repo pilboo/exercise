@@ -19,27 +19,6 @@ reservations::reservations() {
 	init_reservation_arr(RESERVATION_FILE);
 }
 
-/*
-reservations::reservations(customers &c_obj, services &s_obj) {
-	reservation_cnt = 0;
-	reservation_day = "";
-	reservation_time = "";
-	begin_time = "";
-	end_time = "";
-	begin_hour = 8;
-	begin_min = 0;
-	end_hour = 20;
-	end_min = 0;
-
-	all_reservation = nullptr;
-
-	init_reservation_arr(RESERVATION_FILE);
-
-	customer = c_obj;
-	service = s_obj;
-}
-*/
-
 // Accepts the name of the reservation text file, then sets the all_reservation array.
 void reservations::init_reservation_arr(const string &txt) {
 	ifstream reservation_file;
@@ -115,10 +94,10 @@ void reservations::set_reservation_day(string &r_date) {
 		cout << "\n\tSelect the Day of Reservation";
 		cout << "\n\t=================================";
 		cout << "\n\tThe Reservation Can Be Made between " << start_day << " and " << end_day;
-		cout << "\n\tPlease Enter the Date of Reservation (mm-dd-yyyy or Q for Previous Menu): ";
-		cin >> r_date;
+		cout << "\n\tPlease Enter the Date of Reservation (mm-dd-yyyy or 0 for Previous Menu): ";
+		getline(cin, r_date);
 
-		if (r_date == "Q" || r_date == "q") {
+		if (r_date == "0") {
 			isok = true;
 			break;
 		}
@@ -438,7 +417,7 @@ void reservations::set_reservation_time() {
 		cout << ":" << ((begin_min < 10) ? "0" : "") << begin_min << " and ";
 		cout << ((end_hour < 10) ? "0" : "") << end_hour << ":" << ((end_min < 10) ? "0" : "") << end_min;
 		cout << "\n\tPlease Enter the Reservation Time (hh:mm - e.g., 13:00): ";
-		cin >> app_time;
+		getline(cin, app_time);
 
 		if (check_time(app_time) && check_range_of_time(app_time, 0)) {
 			reservation_time = app_time;
@@ -459,7 +438,7 @@ void reservations::set_reservation_time(const string &sid, const string &type_id
 
 	do {
 		cout << "\n\n\tPlease Enter the Reservation Time (hh:mm - e.g., 13:00): ";
-		cin >> app_time;
+		getline(cin, app_time);
 
 		if (check_time(app_time) && check_range_of_time(app_time, stime) 
 			&& check_service(sid, type_id, time_id) && check_customer(begin_time, end_time)) {
@@ -718,21 +697,21 @@ void reservations::input_services() {
 		cout << "\n\tSelect the Service.";
 		cout << "\n\t=================================\n";
 		cout << "\n\tPlease Enter the Service ID: ";
-		cin >> service_input;
+		getline(cin, service_input);
 		
 		if (service.chk_serviceid(service_input)) {
 			cout << "\n\t=================================";
 			cout << "\n\tSelect the Type of Service.";
 			cout << "\n\t=================================";
 			cout << "\n\n\tPlease Enter the Type ID: ";
-			cin >> type_input;
+			getline(cin, type_input);
 
 			if (service.chk_typeid(service_input, type_input)) {
 				cout << "\n\t=================================";
 				cout << "\n\tSelect the Time of Service.";
 				cout << "\n\t=================================";
 				cout << "\n\n\tPlease Enter the Time ID: ";
-				cin >> time_input;
+				getline(cin, time_input);
 
 				if (service.chk_timeid(service_input, type_input, time_input)) {
 					isok = true;
@@ -783,7 +762,7 @@ void reservations::print_available_time() {
 			char ch;
 			do {
 				cout << "\n\t=== SEE MORE? (Y or N): ";
-				cin >> answer;
+				getline(cin, answer);
 
 				if (answer.length() == 1 && isalpha(ch = answer.at(0)) && (toupper(ch) == 'Y' || toupper(ch) == 'N')) {
 					isok = true;
@@ -893,7 +872,7 @@ void reservations::print_available_time(const string &sid, const string &type_id
 			char ch;
 			do {
 				cout << "\n\t=== SEE MORE? (Y or N): ";
-				cin >> answer;
+				getline(cin, answer);
 
 				if (answer.length() == 1 && isalpha(ch = answer.at(0)) && (toupper(ch) == 'Y' || toupper(ch) == 'N')) {
 					isok = true;
@@ -979,9 +958,9 @@ void reservations::set_period(string &b_date, string &b_time, string &e_date, st
 		cout << "\n\n\t=================================";
 		cout << "\n\tSelect a Start Day & Time";
 		cout << "\n\t=================================";
-		cout << "\n\tThe Reservation Can Be Made between " << today << " and d" << chout_day;
+		cout << "\n\tThe Reservation Can Be Made between " << today << " and " << chout_day;
 		cout << "\n\tPlease Enter the Date of Reservation (mm-dd-yyyy): ";
-		cin >> b_date;
+		getline(cin, b_date);
 
 		if (check_date(b_date) && check_range_of_date(b_date, today, chout_day)) {
 			s_day = b_date;
@@ -1000,7 +979,7 @@ void reservations::set_period(string &b_date, string &b_time, string &e_date, st
 		cout << ":" << ((begin_min < 10) ? "0" : "") << begin_min << " and ";
 		cout << ((end_hour < 10) ? "0" : "") << end_hour << ":" << ((end_min < 10) ? "0" : "") << end_min;
 		cout << "\n\tPlease Enter the Reservation Time (hh:mm - e.g., 13:00): ";
-		cin >> b_time;
+		getline(cin, b_time);
 
 		if (check_time(b_time) && check_range_of_time(b_time, 0)) 
 			isok = true;
@@ -1013,7 +992,7 @@ void reservations::set_period(string &b_date, string &b_time, string &e_date, st
 		cout << "\n\t=================================";
 		cout << "\n\tThe Reservation Can Be Made between " << get_nextday(b_date, 1) << " and " << chout_day;
 		cout << "\n\tPlease Enter the Date of Reservation (mm-dd-yyyy): ";
-		cin >> e_date;
+		getline(cin, e_date);
 
 		if (check_date(b_date) && check_range_of_date(e_date, get_nextday(b_date, 1), chout_day)) {
 			e_day = e_date;
@@ -1032,7 +1011,7 @@ void reservations::set_period(string &b_date, string &b_time, string &e_date, st
 		cout << ":" << ((begin_min < 10) ? "0" : "") << begin_min << " and ";
 		cout << ((end_hour < 10) ? "0" : "") << end_hour << ":" << ((end_min < 10) ? "0" : "") << end_min;
 		cout << "\n\tPlease Enter the Reservation Time (hh:mm - e.g., 13:00): ";
-		cin >> e_time;
+		getline(cin, e_time);
 
 		if (check_time(e_time) && check_range_of_time(e_time, 0))
 			isok = true;

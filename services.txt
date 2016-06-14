@@ -1,20 +1,24 @@
-100,01,01,Mineral bath,,60,2.5,0
-100,01,02,Mineral bath,,90,2.5,0
-200,01,01,Massage,swedish,60,3,1
-200,01,02,Massage,swedish,90,3,1
-200,02,01,Massage,shiatsu,60,3,1
-200,02,02,Massage,shiatsu,90,3,1
-200,03,01,Massage,deep tissue,60,3,1
-200,03,02,Massage,deep tissue,90,3,1
-300,01,01,Facial service,normal,30,2,1
-300,01,02,Facial service,normal,60,2,1
-300,02,01,Facial service,collagen,30,2,1
-300,02,02,Facial service,collagen,60,2,1
-400,01,01,Speciality treatment,hot stone,60,3.5,1
-400,01,02,Speciality treatment,hot stone,90,3.5,1
-400,02,01,Speciality treatment,sugar scrub,60,3.5,1
-400,02,02,Speciality treatment,sugar scrub,90,3.5,1
-400,03,01,Speciality treatment,herbal body wrap,60,3.5,1
-400,03,02,Speciality treatment,herbal body wrap,90,3.5,1
-400,04,01,Speciality treatment,botanical mud wrap,60,3.5,1
-400,04,02,Speciality treatment,botanical mud wrap,90,3.5,1
+001,01,01,Mineral bath,,60,2.5,0
+001,01,02,Mineral bath,,90,2.5,0
+002,01,01,Massage,swedish,60,3,1
+002,01,02,Massage,swedish,90,3,1
+002,02,01,Massage,shiatsu,60,3,1
+002,02,02,Massage,shiatsu,90,3,1
+002,03,01,Massage,deep tissue,60,3,1
+002,03,02,Massage,deep tissue,90,3,1
+003,01,01,Facial service,normal,30,2,1
+003,01,02,Facial service,normal,60,2,1
+003,02,01,Facial service,collagen,30,2,1
+003,02,02,Facial service,collagen,60,2,1
+004,01,01,Speciality treatment,hot stone,60,3.5,1
+004,01,02,Speciality treatment,hot stone,90,3.5,1
+004,02,01,Speciality treatment,sugar scrub,60,3.5,1
+004,02,02,Speciality treatment,sugar scrub,90,3.5,1
+004,03,01,Speciality treatment,herbal body wrap,60,3.5,1
+004,03,02,Speciality treatment,herbal body wrap,90,3.5,1
+004,04,01,Speciality treatment,botanical mud wrap,60,3.5,1
+004,04,02,Speciality treatment,botanical mud wrap,90,3.5,1
+005,01,01,Yoga Practice Session,normal,60,3.5,10
+005,01,02,Yoga Practice Session,normal,90,5.5,10
+005,02,01,Yoga Practice Session,hot & hard,60,3.5,10
+005,02,02,Yoga Practice Session,hot & hard,90,5.5,10

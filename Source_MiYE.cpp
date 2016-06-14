@@ -16,7 +16,6 @@ int main() {
 	bool flag_for_op = false;
 
 	do {	// Operation Menu
-		system("cls");
 		cout << "\n\n\t=======================================================";
 		cout << "\n\n\t                    Welcome to MiYE";
 		cout << "\n\n\t=======================================================";
@@ -25,43 +24,41 @@ int main() {
 		cout << "\n\n\t 1. For Spa Management\t\t2. For Maintenance";
 		cout << "\n\n\t 0. Quit the Program";
 		cout << "\n\n\t-------------------------------------------------------";
-		cout << "\n\tEnter Your Choice (1-2, 0 to quit): ";
-		cin >> op_choice;
+		cout << "\n\tEnter Your Choice (1-2 or 0 to quit): ";
+		getline(cin, op_choice);
 
 		if (op_choice.length() == 1 && isdigit(op_choice.at(0))) {
 			customers customer;
 			string customer_id;
+
+			services service;
+			string service_id, type_id, time_id;
+
+			reservations reservation;
 
 			bool flag_for_customer = false;
 			string customer_choice;	// Keeps the clerk's input for the customer ID#
 
 			switch (stoi(op_choice)) {	// Operation menu
 			case 0:		// Operation menu #0. Quit the program
-				system("cls");
 				cout << "\n\n\tQuitting...";
 				cout << "\n\n\tEXIT MiYE" << endl;
 				flag_for_op = true;
 				break;
 			case 1:		// Operation menu #1. For spa management
 				do {	// For the customer ID# input
-					cout << "\n\n\tEnter the Customer ID# (000 - 999, Q for Operation Menu): ";
-					cin >> customer_choice;
+					cout << "\n\n\tEnter the Customer ID# (000 - 999 or 0 for Operation Menu): ";
+					getline(cin, customer_choice);
 
-					if ((customer_choice == "Q" || customer_choice == "q")) {
+					if (customer_choice == "0") {
 						flag_for_customer = true;
 						cout << "\n\t=== Returning to Operation Menu ===\n";
-						system("pause");
 						break;
 					}	// End of if ((customer choice == "Q") ...)
 					else if (customer.set_customer(customer_choice)) {
 						
 						customer_id = customer.get_c_id();
-
-						services service;
-						string service_id, type_id, time_id;
-
-						reservations reservation;
-						reservation.set_customer_id(customer_id);
+						reservation.set_customer_id(customer_id);					
 
 						string main_choice;		// For the choice of main menu
 						bool flag_for_main = false;
@@ -75,10 +72,11 @@ int main() {
 							cout << "\n\t 1. Reserve the Service";
 							cout << "\n\t 2. Cancel the reservation(s)";
 							cout << "\n\t 3. Produce the Service Bill";
+							cout << "\n\t";
 							cout << "\n\t 0. Input Customer ID#";
 							cout << "\n\t-------------------------------------------------------";
-							cout << "\n\tEnter Your Choice (1-4, 0 for Customer ID# Input): ";
-							cin >> main_choice;
+							cout << "\n\tEnter Your Choice (1-3 or 0 for Customer ID# Input): ";
+							getline(cin, main_choice);
 
 							if (main_choice.length() == 1 && isdigit(main_choice.at(0))) {
 
@@ -101,9 +99,11 @@ int main() {
 										cout << "\n\t 2. View All Avaiable Services at a Specific Time";
 										cout << "\n\t 3. View Available Times for a Service during Given Time";
 										cout << "\n\t 4. View Available Time Slots by the Time of Checkout";
+										cout << "\n\t";
+										cout << "\n\t 0. Return to Main Menu";
 										cout << "\n\t---------------------------------------------------------";
-										cout << "\n\tEnter One Option (1-4, 0 for Main Menu): ";
-										cin >> res_opt;
+										cout << "\n\tEnter One Option (1-4 or 0 for Main Menu): ";
+										getline(cin, res_opt);
 
 										if (res_opt.length() == 1 && isdigit(res_opt.at(0))) {
 
@@ -233,6 +233,87 @@ int main() {
 				} while (!flag_for_customer);	// End of customer ID# input
 				break;
 			case 2:		// Operation menu #2. For maintenance
+				do {
+					cout << "\n\n\t=======================================================";
+					cout << "\n\n\t                MAINTENANCE for MiYE";
+					cout << "\n\n\t=======================================================";
+					cout << "\n\t 1. Manage Service Specification";
+					cout << "\n\t 2. Report Service Usage";
+					cout << "\n\t";
+					cout << "\n\t 0. Return to the Operation Menu";
+					cout << "\n\t-------------------------------------------------------";
+					cout << "\n\tEnter Your Choice (1-2, 0 for Operation Menu): ";
+					getline(cin, customer_choice);
+
+					if (customer_choice.length() == 1 && isdigit(customer_choice.at(0))) {
+						string mt_choice;
+						bool flag_for_mt = false;
+
+						switch (stoi(customer_choice)) {
+						case 0:
+							flag_for_customer = true;
+							cout << "\n\t=== Returning to Operation Menu ===\n";
+							break;
+						case 1:
+							do {
+								cout << "\n\n\t=========================================================";
+								cout << "\n\t              MANAGE SERVICE SPECIFICATION";								
+								cout << "\n\t---------------------------------------------------------";
+								service.print_services();
+								cout << "\n\t---------------------------------------------------------";
+								cout << "\n\t 1. Add a New Service";
+								cout << "\n\t 2. Input a Service ID# for Change";
+								cout << "\n\t";
+								cout << "\n\t 0. Return to the Maintenance Menu";
+								cout << "\n\t---------------------------------------------------------";
+								cout << "\n\tEnter Your Choice or Input the Service ID#: ";
+								getline(cin, mt_choice);
+
+								if (mt_choice == "0") {
+									flag_for_mt = true;
+									cout << "\n\t=== Returning to Maintenance Menu ===\n";
+									break;
+								}	// End of if (mt_choice == "0")
+								else if (mt_choice == "1") {
+									service.add_new_service();
+								}	// End of else if (mt_choice == "1")
+								else if (mt_choice == "2") {
+									cout << "\n\tInput the Service ID#: ";
+									getline(cin, mt_choice);
+									
+								}	// End of if (mt_choice == "0")
+								
+								/*
+								string tp_choice;
+								
+								if (mt_choice != "1" && service.chk_serviceid(mt_choice)){
+									cout << "\n\n\t=========================================================";
+									cout << "\n\t [" << mt_choice << "] " << service.get_service_name(mt_choice);
+									cout << "\n\t---------------------------------------------------------";
+									service.print_types(mt_choice);
+									cout << "\n\t---------------------------------------------------------";
+									cout << "\n\t 1. Add a New Type";
+									cout << "\n\t 2. Input a Type ID# for Change";
+									cout << "\n\t";
+									cout << "\n\t 0. Return to Selecting Service Menu";
+									cout << "\n\t---------------------------------------------------------";
+									cout << "\n\tEnter Your Choice or Input the Type ID#:";
+									cin >> tp_choice;
+
+								}	// End of if (service.chk_serviceid(mt_choice))
+								*/
+							} while (!flag_for_mt);
+							break;
+						case 2:
+							break;
+						default:
+							cout << "\n\n\r\t [ERROR] Please Enter a Number (0-2) ===\n";
+						} // End of switch (stoi(customer_choice)) 
+					} // Else of if (customer_choice.length() == 1 && isdigit(customer_choice.at(0)))
+					else {
+						"\n\n\t=== [ERROR] Please Enter a Valid Menu: A Digit Number (0-2) ===\n";
+					} // End of if (customer_choice.length() == 1 && isdigit(customer_choice.at(0)))
+				} while (!flag_for_customer);
 				break;
 			default:
 				cout << "\n\n\t=== [ERROR] Please Enter a Number (0-2) ===\n";
@@ -240,7 +321,6 @@ int main() {
 		}
 		else {
 			cout << "\n\n\t=== [ERROR] Please Enter a Valid Menu: A Digit Number (0-2) ===\n";
-			system("pause");
 		} // End of if (op_choice.length() ... )
 
 	} while (!flag_for_op);

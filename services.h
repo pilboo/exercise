@@ -2,6 +2,7 @@
 #define SERVICES_H
 
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 #include <string>
 using namespace std;
@@ -18,21 +19,6 @@ private:
 	double s_service_price;
 	int s_service_limit;
 	
-	// Structure for handling the service information
-	/* 
-	struct service_info {
-		string service_id;
-		string type_id;
-		string time_id;
-		string service_name;
-		string service_type;
-		int service_time;
-		double service_price;
-		int service_limit;
-	};
-	
-	service_info *all_services;		// Pointer to be stored into the service from the services.txt
-	*/
 	int service_cnt;				// Holds the elements numbers of the service array
 	
 	string SERVICE_FILE = "services.txt";
@@ -54,7 +40,6 @@ public:
 	service_info *all_services;
 
 	services();
-	services(services&);
 	bool check_service_choice(string&);
 	void print_service_choice(string&);
 	void print_services();
@@ -85,6 +70,11 @@ public:
 	int get_service_limit(const string&, const string&, const string&);
 	service_info *get_all_services();
 	void print_all_serivces();
+	// For maintenance
+	void add_new_service();
+	void add_new_types(const int&, string*);
+	void add_new_times(const int&, int*, double*, int*);
+	bool check_int(const string&);
 	~services();
 };
 

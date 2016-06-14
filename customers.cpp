@@ -163,7 +163,7 @@ bool customers::check_stay(const customer_info *c_info) {
 
 	set_cur();
 	
-	if ((get_days_left(chin, cur_day) <= 0 || get_days_left(cur_day, chout) <= 0) && (chin != chout)) {
+	if ((get_days_left(chin, cur_day) <= 0 && get_days_left(cur_day, chout) <= 0) && (chin != chout)) {
 		cout << "\n\n\t=== [No Within Stay Customer] ===\n";
 		return false;
 	}

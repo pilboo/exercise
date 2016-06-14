@@ -90,14 +90,18 @@ bool services::check_service_choice(string &s_input) {
 }
 
 void services::print_service_choice(string &s_input) {
-	
-	cout << "\n\n\t=================================";
-	cout << "\n\tSelect the Service.";
-	cout << "\n\t=================================\n";
-	print_services();
-	cout << "\n\tPlease Enter the Service ID (3-digit number, Q for Reservation Option): ";
-	cin >> s_input;
+	do {
+		cout << "\n\n\t=================================";
+		cout << "\n\tSelect the Service.";
+		cout << "\n\t=================================\n";
+		print_services();
+		cout << "\n\tPlease Enter the Service ID (3-digit number, Q for Reservation Option): ";
+		cin >> s_input;
 
+		if (check_service_choice(s_input))
+			break;
+	} while (!chk_serviceid(s_input));
+	return;
 }
 
 void services::select_service(string &service_input) {
@@ -110,7 +114,7 @@ void services::select_service(string &service_input) {
 	int selected_cnt = 0;
 
 	do {
-		if (chk_serviceid(service_input)) {
+		//if (chk_serviceid(service_input)) {
 			selected_cnt = set_temp_count(service_input);
 			selected_service = new service_info[selected_cnt];
 
@@ -141,7 +145,7 @@ void services::select_service(string &service_input) {
 
 			set_selected_service(type_input, time_input, selected_service, selected_cnt);
 			isok = true;
-		}
+		//}
 		
 	} while (!isok);
 
@@ -361,7 +365,7 @@ int services::get_service_time() const {
 }
 
 int services::get_service_time(const string &sid, const string &type_id, const string &time_id) {
-	int s_time;
+	int s_time = 0;
 	
 	for (int i = 0; i < service_cnt; i++) {
 		if (all_services[i].service_id == sid && all_services[i].type_id == type_id &&
@@ -379,7 +383,7 @@ double services::get_service_price() const {
 }
 
 double services::get_service_price(const string &sid, const string &type_id, const string &time_id) {
-	double s_price;
+	double s_price = 0.0;
 
 	for (int i = 0; i < service_cnt; i++) {
 		if (all_services[i].service_id == sid && all_services[i].type_id == type_id &&
@@ -396,7 +400,7 @@ int services::get_service_limit() const {
 }
 
 int services::get_service_limit(const string &sid, const string &type_id, const string &time_id) {
-	int slimit;
+	int slimit = 0;
 	
 	for (int i = 0; i < service_cnt; i++) {
 		if (all_services[i].service_id == sid && all_services[i].type_id == type_id &&

@@ -8,6 +8,7 @@
 #include "services.h"
 #include "reservations.h"
 #include "cancel_reservation.h"
+#include "bills.h"
 using namespace std;
 
 int main() {
@@ -84,6 +85,7 @@ int main() {
 								string res_opt;
 								bool flag_for_resopt = false;
 								cancel_reservation cancel;
+								bills bill;
 
 								switch (stoi(main_choice)) {
 								case 0:	// Main menu #0. Input customer ID#
@@ -171,9 +173,11 @@ int main() {
 															reservation.reserve(service_id, type_id, time_id);
 															flag_service_choice = true;
 														}
-														else 
-															break;																																									
-													} // End of if (servoce_choice == "Q" ...)
+														else
+															break;
+													}
+													else
+														break;// End of if (servoce_choice == "Q" ...)
 												} while (!flag_service_choice);
 												break;
 											case 4:	// Reservation option #4. View avaiable time slots by the time of checkout
@@ -213,6 +217,8 @@ int main() {
 									} while (!flag_for_resopt);
 									break;
 								case 3:	// Produce the servcie bill
+									bill.set_customer_id(customer_id);	
+									bill.print_bill();
 									break;
 								default:
 									cout << "\n\n\t=== [ERROR] Please Enter a Number (0-3) ===\n";
